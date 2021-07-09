@@ -1,0 +1,25 @@
+# get to your target folder and git the respository
+
+git clone https://github.com/schneebergerlab/GameteBinning_tetraploid.git
+
+# install library dependency. Note: this needs c library [zlib.h](https://github.com/madler/zlib)
+
+cd GameteBinnin_tetraploid
+cd dependency_src_gzstream/
+
+make clean
+make
+
+cp libgzstream.a ../src_depth_hist_sliding_window/gzlib/
+
+cd ..
+
+# install tools
+
+srcall=`echo src_*/`
+for src in ${srcall}; do cd ./${src}; make; cd ..; done
+
+# add the dev_bin to your environmental PATH variable.
+
+cwp=`pwd`
+export PATH=${cwp}/dev_bin:$PATH
