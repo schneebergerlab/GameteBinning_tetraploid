@@ -11,6 +11,9 @@ make clean
 make
 
 cp libgzstream.a ../src_depth_hist_sliding_window/gzlib/
+cp libgzstream.a ../src_asCellseparator/gzlib
+cp libgzstream.a ../src_as10xbamFqer/gzlib
+cp libgzstream.a ../src_10x_barcode_trimmer/gzlib
 
 cd ..
 

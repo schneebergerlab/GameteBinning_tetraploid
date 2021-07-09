@@ -1,0 +1,26 @@
+
+   Info: R1 file: /path/to/4279_A_run615_SI-GA-D4_S1_L003_R1_001.fastq.gz
+   Info: total number of barcodes observed in file1: 399728
+   Info: total number of reads    observed in file1: 2852757
+         among the above, good with read pairs >= 5000: 
+               number of barcodes observed in file1: 199
+               number of reads    observed in file1: 1660872
+   Info: number of effective barcodes: 199
+   Total time consumed for checking barcode stat: 17.2446 seconds.
+
+   Info: R1 file: /path/to/4279_A_run615_SI-GA-D4_S1_L003_R1_001.fastq.gz
+   Info: R2 file: /path/to/4279_A_run615_SI-GA-D4_S1_L003_R2_001.fastq.gz
+
+  Separating reads... 
+   Info: output reads for part 1 with 199 barcodes: 500000 read pairs. 
+   Info: 1000000 read pairs checked..
+   Info: output reads for part 2 with 199 barcodes: 500000 read pairs. 
+   Info: 2000000 read pairs checked..
+   Info: output reads for part 3 with 199 barcodes: 500000 read pairs. 
+   Info: output reads for part 4 with 199 barcodes: 160872 read pairs. 
+   Info: 2852757 read pairs checked: 1660872 selected. 
+   Total time consumed for selecting cells with >= 5000 read pairs: 292.652 seconds.
+
+
+  Total time consumed overall: 292.652 seconds.
+
