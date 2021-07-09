@@ -236,11 +236,11 @@ int main(int argc, char* argv[])
 {
     if(argc < 8)
     {
-        // g++ gamete_binning.cpp split_string.cpp -O3 -o gamete_binning
+        // g++ gamete_binning_tetra.cpp split_string.cpp -O3 -o gamete_binning_tetra
         cout << "\nFunction: analyze sequencing depth of tig markers, cluster markers and bin long reads. ";
         const char *buildString = __DATE__ ", " __TIME__ ".";
-        cout << "(compiled on " << buildString << ")" << endl
-             << "\nUsage: gamete_binning"
+        cout << "(version 1.0 - compiled on " << buildString << ")" << endl
+             << "\nUsage: gamete_binning_tetra"
                  << " list_bed_files.txt"
                  << " cor_cutoff"
                  << " contig_size.txt"
