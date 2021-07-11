@@ -202,7 +202,7 @@ Get list of good barcodes,
    
 Similarly, extract cell-wise sequencings from library B.
 
-##### step 8. read alignment and genotype calling
+##### step 8. read alignment for each pollen genome sequencing
 
     wd=/path/to/individual_nuclei_read_align/
     cd ${wd}
@@ -229,10 +229,38 @@ Similarly, extract cell-wise sequencings from library B.
         cd ${cellpath}
     done
     
+##### step 9. genotype each pollen at each contig marker - note 1: "-F 3840" == "-F 256 -F 512 -F 1024 -F 2048", excluding all kinds of non-primary alignment! - note 2: MQ=5 is too stringent that it was observed some pollen lost coverage at haplotig markers (where there were primary-reads with MQ=1); need to use MQ1: found with IGV
+
+    wd=/path/to/individual_nuclei_read_align/
+    cd ${wd}
     
+    cut -f1-3 /path/to/cnv_winsize10000_step10000_hq_markers_20210714_wsize50kb_final.txt > cnv_winsize10000_step10000_hq_markers_20210714_wsize50kb_final.bed
+    MQ=1
+    cellpath=/path/to/individual_nuclei_extraction/
+    for sample in A B; do
+        while read r; do 
+            cd ${cellpath}/sample_${sample}_asCellseparator_40krp/${r}
+            samtools view -h -F 3840 -q ${MQ} -bS longctg_${r}_markeduplicates.bam | samtools sort -o longctg_${r}_markeduplicates_MQ${MQ}_clean.bam -
+            samtools index longctg_${r}_markeduplicates_MQ${MQ}_clean.bam
+            bedtools coverage -counts -a /path/to/cnv_winsize10000_step10000_hq_markers_20210714_wsize50kb_final.bed -b longctg_${r}_markeduplicates_MQ${MQ}_clean.bam -bed > longctg_${r}_win_marker_read_count_MQ${MQ}.bed            
+        done < ${cellpath}/sample_${sample}_asCellseparator_40krp/${sample}_this_barcode_list
+    done
     
-    
-    
+##### step 10 add more info on markers to read cnt file 
+
+    cellpath=/path/to/individual_nuclei_extraction/
+    cd ${cellpath}
+    marker=/path/to/cnv_winsize10000_step10000_hq_markers_20210714_wsize50kb_final.txt
+    MQ=1
+    for sample in A B; do
+        while read r; do 
+            echo -e ${sample}"\t"${r}
+            cd ${cellpath}/sample_${sample}_asCellseparator_40krp/${r}
+            paste longctg_${r}_win_marker_read_count_MQ${MQ}.bed ${marker} > longctg_${r}_win_marker_read_count_MQ${MQ}_updated.bed
+        done < ${cellpath}/sample_${sample}_asCellseparator_40krp/${sample}_this_barcode_list
+    done
+
+##### step 11 gamete binning     
     
     
     
