@@ -52,14 +52,14 @@ Index it with bowtie2 for later read alignment (4 threads used)
     bowtie2-build -f otava.p_utg.fasta otava.p_utg.fasta --threads 4
 
 
-##### Step 3. Curation of assembly using read depth (purge repetitive contigs representing the same genomic regions)    
+##### Step 3. Curation of assembly using read depth (or, purge redundant contigs representing the same genomic regions)    
 
-This leads to a version of manually curated assembly (please refer to manuscript for details)
+This leads to a version of manually curated assembly (please refer to manuscript supplementary information, section "Initial tetraploid genome assembly, polishing and purging" for details)
 
 * HiFiasm_ref_pilon_6366long_ctgs_selected.fasta
-* HiFiasm_ref_pilon_6366long_ctgs_selected.chrsizes (this is contig size file of the assembly with format: contig_id	contig_size, tab-separated)
+* HiFiasm_ref_pilon_6366long_ctgs_selected.chrsizes (this is the contig size file with two tab-separated columns: contig_id	contig_size)
 
-Note, it is a mixture of four haplotypes (with potentially collapsed homozygous regions between haplotypes).
+Note, it is a mixture of four haplotypes (with potentially collapsed homozygous regions between any more than one haplotype).
 
 Index the sequence as reference for later steps,
 
