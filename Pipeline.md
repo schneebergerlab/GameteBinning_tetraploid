@@ -79,7 +79,6 @@ Align pooled gamete reads to the reference
 Remove duplicates and get position-wise depth
 
     java -jar picard.jar MarkDuplicates I=gamete_ManualCurated.bam O=gamete_ManualCurated_markeduplicates.bam M=gamete_ManualCurated_marked_dup_metrics.txt
-    samtools depth gamete_ManualCurated_markeduplicates.bam > gamete_ManualCurated_markeduplicates.depth.txt
     samtools index gamete_ManualCurated_markeduplicates.bam
     
 Similarly, align sm related reads and get bam file 
@@ -87,7 +86,6 @@ Similarly, align sm related reads and get bam file
     refgenome=/path/to/curated_asm/HiFiasm_ref_6366long_ctgs_selected.fasta
     bowtie2 -x ${refgenome} -1 /path/to/reads/C_seq2806_R1_clean.fastq.gz -2 /path/to/reads/C_seq2806_R2_clean.fastq.gz -p 20 | samtools view -@ 20 -bS - | samtools sort -@ 20 -o sm_ManualCurated.bam -
     java -jar picard.jar MarkDuplicates I=sm_ManualCurated.bam O=sm_ManualCurated_markeduplicates.bam M=sm_ManualCurated_marked_dup_metrics.txt
-    samtools depth sm_ManualCurated_markeduplicates.bam > sm_ManualCurated_markeduplicates.depth.txt
     samtools index sm_ManualCurated_markeduplicates.bam
     
 Align HiFi reads, remove non-primary alignments and get position-wise depth 
@@ -96,7 +94,6 @@ Align HiFi reads, remove non-primary alignments and get position-wise depth
     refgenome=/path/to/curated_asm/HiFiasm_ref_6366long_ctgs_selected.fasta
     minimap2 -ax map-pb -t 20 -N 1 --secondary=no ${refgenome} ${otavahifi} | samtools view -@ 20 -bS - | samtools sort -@ 20 -o HiFi_ManualCurated.bam -
     samtools view -h -F 3840 -bS HiFi_ManualCurated.bam | samtools sort -o HiFi_ManualCurated_clean.bam - 
-    samtools depth -Q 1 -a HiFi_ManualCurated_clean.bam > HiFi_ManualCurated_depth_clean.txt
 
 Get position-wise sequencing depth 
 
