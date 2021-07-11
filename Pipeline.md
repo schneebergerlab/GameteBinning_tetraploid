@@ -10,7 +10,7 @@ single-cell sequencing of sufficient (e.g., hundreds of) gamete genomes. In this
 * PacBio: long_reads_raw.fa
 * 10x Genomics+Illumina: e.g., A_seq4414plus4431_R1.fastq.gz, A_seq4414plus4431_R2.fastq.gz (available on NCBI Bioproject: PRJNA726019)
 
-Suppose all these raw data are collected the path below, and for convenience, make some softlinks (Note, 10x Genomics tools need the full name, so we use both namings),
+Suppose all these raw data are collected in the path below, and for convenience, create softlinks for fastq files (Note, 10x Genomics tools need the full name, so we use both namings),
 
     wd=/path/to/reads/
     cd ${wd}
@@ -45,7 +45,7 @@ This leads to preliminary assembly (we select the utg-level) by
 
 * otava.p_utg.fasta
 
-(Polish the preliminary assembly - not necessary here.)
+(Polish the preliminary assembly - not necessary, so not given here)
 
 Index it with bowtie2 for later read alignment (4 threads used)
 
