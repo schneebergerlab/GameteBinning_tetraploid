@@ -5,10 +5,11 @@ This is the pipeline explaining how gamete binning in tetraploid (potato) works.
 ##### Step 0. Prepare data
 
 All data are from a tetraploid (potato cultivar) of interest, including PacBio HiFi reads from somatic tissue and short reads from
-single-cell sequencing of sufficient (e.g., hundreds of) gamete genomes. In this example, we use the following:
+single-cell sequencing of sufficient (e.g., hundreds of) gamete genomes. In this example, we use the following (available on NCBI Bioproject: PRJNA726019):
 
-* PacBio: long_reads_raw.fa
-* 10x Genomics+Illumina: e.g., A_seq4414plus4431_R1.fastq.gz, A_seq4414plus4431_R2.fastq.gz (available on NCBI Bioproject: PRJNA726019)
+* PacBio HiFi: long_reads_raw.fa
+* 10x Genomics+Illumina (sc): e.g., A_seq4414plus4431_R1.fastq.gz, A_seq4414plus4431_R2.fastq.gz 
+* 10x Genomics+Illumina (sm): e.g., C_seq2806_R1.fastq.gz, C_seq2806_R2.fastq.gz (for depth analysis)
 
 Suppose all these raw data are collected in the path below, and for convenience, create softlinks for fastq files (Note, 10x Genomics tools need the full name, so we use both namings),
 
@@ -52,48 +53,65 @@ Index it with bowtie2 for later read alignment (4 threads used)
     bowtie2-build -f otava.p_utg.fasta otava.p_utg.fasta --threads 4
 
 
-##### Step 3. Curation of assembly using read depth (or, purge redundant contigs representing the same genomic regions)    
+##### Step 3. Curation of assembly using read alignment depth (or, purge redundant contigs representing the same genomic regions)    
 
 This leads to a version of manually curated assembly (please refer to manuscript supplementary information, section "Initial tetraploid genome assembly, polishing and purging" for details)
 
-* HiFiasm_ref_pilon_6366long_ctgs_selected.fasta
-* HiFiasm_ref_pilon_6366long_ctgs_selected.chrsizes (this is the contig size file with two tab-separated columns: contig_id	contig_size)
+* HiFiasm_ref_6366long_ctgs_selected.fasta
+* HiFiasm_ref_6366long_ctgs_selected.chrsizes (this is the contig size file with two tab-separated columns: contig_id	contig_size)
 
 Note, it is a mixture of four haplotypes (with potentially collapsed homozygous regions between any more than one haplotype).
 
 Index the sequence as reference for later steps,
 
-    refgenome=HiFiasm_ref_pilon_6366long_ctgs_selected.fasta
+    refgenome=HiFiasm_ref_6366long_ctgs_selected.fasta
     bowtie2-build -f ${refgenome} ${refgenome} --threads 4
 
-##### Step 4. Read alignment of pooled gamete nuclei for tig marker identification
+##### Step 4. Read alignment of pooled gamete nuclei sequencing for haplo/diplo/triplo/tetraplotig marker identification (note we used sc, sm and HiFi depth to collect more power to differentiate different types of contigs)
 
     wd=/path/to/marker_creation/
     cd ${wd}
 
 Align pooled gamete reads to the reference
 
-    refgenome=/path/to/curated_asm/manually_curated.fasta
-    bowtie2 -x ${refgenome} -1 /path/to/reads/gamete_libx_R1_clean.fastq.gz -2 /path/to/reads/gamete_libx_R2_clean.fastq.gz -p 20 | samtools view -@ 20 -bS - | samtools sort -@ 20 -o gamete_ManualCurated.bam -; samtools depth gamete_ManualCurated.bam > gamete_ManualCurated.depth.txt; samtools index gamete_ManualCurated.bam
+    refgenome=/path/to/curated_asm/HiFiasm_ref_6366long_ctgs_selected.fasta
+    bowtie2 -x ${refgenome} -1 /path/to/reads/gamete_libx_R1_clean.fastq.gz -2 /path/to/reads/gamete_libx_R2_clean.fastq.gz -p 20 | samtools view -@ 20 -bS - | samtools sort -@ 20 -o gamete_ManualCurated.bam -
+    
+Remove duplicates and get position-wise depth
 
-Get vcf and variants (a file of ploidy need, columns are '\t'-separated)
+    java -jar picard.jar MarkDuplicates I=gamete_ManualCurated.bam O=gamete_ManualCurated_markeduplicates.bam M=gamete_ManualCurated_marked_dup_metrics.txt
+    samtools depth gamete_ManualCurated_markeduplicates.bam > gamete_ManualCurated_markeduplicates.depth.txt
+    samtools index gamete_ManualCurated_markeduplicates.bam
+    
+Similarly, align sm related to reads and get bam file 
 
-    echo "*	*	*	*	2" > ploidy
-    bcftools mpileup -d 800 -f ${refgenome} gamete_ManualCurated.bam |bcftools call -m -v -Ov --ploidy-file ${ploidy} > gamete_ManualCurated.vcf
+    refgenome=/path/to/curated_asm/HiFiasm_ref_6366long_ctgs_selected.fasta
+    bowtie2 -x ${refgenome} -1 /path/to/reads/C_seq2806_R1.fastq.gz -2 /path/to/reads/C_seq2806_R2.fastq.gz -p 20 | samtools view -@ 20 -bS - | samtools sort -@ 20 -o sm_ManualCurated.bam -
+    java -jar picard.jar MarkDuplicates I=sm_ManualCurated.bam O=sm_ManualCurated_markeduplicates.bam M=sm_ManualCurated_marked_dup_metrics.txt
+    samtools depth sm_ManualCurated_markeduplicates.bam > sm_ManualCurated_markeduplicates.depth.txt
+    samtools index sm_ManualCurated_markeduplicates.bam
+    
+Align HiFi reads, remove non-primary alignments and get position-wise depth 
+    
+    otavahifi=/path/to/reads/long_reads_raw.fa
+    refgenome=/path/to/curated_asm/HiFiasm_ref_6366long_ctgs_selected.fasta
+    minimap2 -ax map-pb -t 20 -N 1 --secondary=no ${refgenome} ${otavahifi} | samtools view -@ 20 -bS - | samtools sort -@ 20 -o HiFi_ManualCurated.bam -
+    samtools view -h -F 3840 -bS HiFi_ManualCurated.bam | samtools sort -o HiFi_ManualCurated_clean.bam - 
+    samtools depth -Q 1 -a HiFi_ManualCurated_clean.bam > HiFi_ManualCurated_depth_clean.txt
 
-Convert the variant format to plain text
+Get position-wise sequencing depth 
 
-    SHOREmap convert --marker gamete_ManualCurated.vcf --folder shoremap_converted --indel-size 5 --min-AF 0.1 -runid 20200426
+    samtools depth -Q 1 -a gamete_ManualCurated.bam sm_ManualCurated.bam HiFi_ManualCurated_clean.bam > otava_Hifiasm_ref_pb_illu_depth.txt
+    awk '{printf ("%s\t%s\t%s\n", $1, $2, $3+$4+$5)}' otava_Hifiasm_ref_pb_illu_depth.txt > otava_Hifiasm_ref_pb_illu_depth_sum.txt
+    rm otava_Hifiasm_ref_pb_illu_depth.txt
+    
+# step 5: find distribution of average depth at non-overlapping windows: winstep = winsize
 
-This leads to 
-
-    20200426_converted_variant.txt
-
-Filtering for allelic snps. This needs to tune quality and coverage according to the specific data. For allele frequency, as we are looking for allelic snps, it should be around 0.5; while the coverage on the alt allele should be around half the genome wide average. In the meanwhile, the total coverage should not be too small or too large. In my case, the avg is around 171x (and half:84x), and we can try the cutoffs below:
-
-Note, $6 is mapping quality; $7 is coverage of alt allele, we can try with
-
-    awk '$6>=100 && $7>=60 && $7<=140 && $7/$8>=120 && $7/$8<=280 && $8>=0.38 && $8<=0.62' /path/to/20200426_converted_variant.txt > final_snp_markers.txt
+    chrsizes=/path/to/HiFiasm_ref_6366long_ctgs_selected.ctgsizes
+    samplecol=1
+    avgdepth=113 # 137*0.85
+    winsize=10000
+    CNV_HQ_v3 ${chrsizes} otava_Hifiasm_ref_pb_illu_depth_sum.txt ${winsize} ${winsize} ${samplecol} ${avgdepth}
 
 ##### Step 6. 10x Genomics barcode correction and nuclei separation
 
@@ -176,7 +194,7 @@ Prepare ploidy file,
 
 Align individual nuclei to manually curated genome (see Step 4.),
 
-    refgenome=/path/to/curated_asm/manually_curated.fasta
+    refgenome=/path/to/curated_asm/HiFiasm_ref_6366long_ctgs_selected.fasta
     while read bc; do
         cd /path/to/individual_nuclei_extraction/cells_sep/${bc}
         bowtie2 -p 1 -x ${refgenome} -1 ${bc}_R1.fastq.gz -2 ${bc}_R2.fastq.gz 2> bowtie2.err | samtools view -@ 1 -bS - | samtools sort -@ 1 -o part1_${bc}.bam -
@@ -196,7 +214,7 @@ Note, at this step, there is possiblity to figure out which nuclei could be rela
 
     while read bc; do
         cd /path/to/individual_nuclei_extraction/cells_sep/${bc}
-        SHOREmap extract --marker /path/to/marker_creation/final_snp_markers.txt --chrsizes /path/to/curated_asm/manually_curated.chrsizes --folder . --consen 20200426_converted_consen.txt
+        SHOREmap extract --marker /path/to/marker_creation/final_snp_markers.txt --chrsizes /path/to/curated_asm/HiFiasm_ref_6366long_ctgs_selected.chrsizes --folder . --consen 20200426_converted_consen.txt
     done < barcode_over_5000rpairs.list
 
 ##### Step 9. Phasing SNPs within gamete genomes.
@@ -209,7 +227,7 @@ Prepare a meta-file of subset662_consen_cells.txt, where each line points to a c
     date=20200426
     marker=/path/to/marker_creation/final_snp_markers.txt
     cells=/path/to/subset662_consen_cells.txt
-    sizes=/path/to/curated_asm/manually_curated.chrsizes
+    sizes=/path/to/curated_asm/HiFiasm_ref_6366long_ctgs_selected.chrsizes
     asPollinator_1.0 --marker ${marker} --pollen ${cells} -o z${date}_phasing_with_correction_XXX_samples_full_markerSet_scorep81 --corr --ims 0.81 --size ${sizes} > z${date}_phasing_with_correction_XXX_samples_full_markerSet_scorep81.log
 
 Collect the PM pattern of each nuclei at each contig for next step of haploid evaluation,
@@ -254,7 +272,7 @@ Note, for different species, this would be different. We will later use the 216-
     cd ${wd}
 
     marker=/path/to/marker_creation/final_snp_markers.txt
-    sizes=/path/to/curated_asm/manually_curated.chrsizes
+    sizes=/path/to/curated_asm/HiFiasm_ref_6366long_ctgs_selected.chrsizes
     mkdir define_del_like_regions
     cd define_del_like_regions
     del_marker_finder --marker ${marker} --min-del-size 2000 --chrsizes ${sizes} -o del_like > define_del_isize2000.log
@@ -339,7 +357,7 @@ This finally leads to,
 
 Align PacBio reads to the manully curated assembly
 
-    refgenome=/path/to/curated_asm/manually_curated.fasta
+    refgenome=/path/to/curated_asm/HiFiasm_ref_6366long_ctgs_selected.fasta
     minimap2 -ax map-pb -t 4 ${refgenome} /path/to/long_reads_raw.fa > pacbio_manual_purged_ref.sam
 
 Separate longs with phased snps and dels in each linkage group,
@@ -415,7 +433,7 @@ This leads to 16 haplotype-specific assemblies, each representing for one haploi
 
 Create a pseudo-reference chromosome for each linkage group with manually curated assembly (from Step 4) and the final complete genetic map (from Step 14: asCaffolder_v2),
 
-    fa=/path/to/curated_asm/manually_curated.fasta
+    fa=/path/to/curated_asm/HiFiasm_ref_6366long_ctgs_selected.fasta
     updatedgm=/path/to/updated_genetic_map_folder/
     >scaffolder.log
     for i in {1..8}; do 
