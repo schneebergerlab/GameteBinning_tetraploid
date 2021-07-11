@@ -259,10 +259,39 @@ Similarly, extract cell-wise sequencings from library B.
             paste longctg_${r}_win_marker_read_count_MQ${MQ}.bed ${marker} > longctg_${r}_win_marker_read_count_MQ${MQ}_updated.bed
         done < ${cellpath}/sample_${sample}_asCellseparator_40krp/${sample}_this_barcode_list
     done
+    
+Note, we finally selected 717 nuclei to perform gamete binning, given under: "/aux_data/", i.e., longctg_s4p3_selected_717_good_nucei_lib[A|B].txt
 
-##### step 11 gamete binning     
+##### step 11 prepare nuclei depth data
+
+    wd=/path/to/s5_selected_long_contigs_sc_read_coverage_genotype_v2/
+    ls /path/to/individual_nuclei_extraction/sample_*_asCellseparator_40krp/*/longctg_*_win_marker_read_count_MQ1_updated.bed > longctg_list_bed_files.txt
+    #
+    >longctg_list_bed_files_selected717.txt
+    for sample in A B; do 
+        while read bc; do 
+             grep ${bc} longctg_list_bed_files.txt >> longctg_list_bed_files_selected717.txt
+        done < ../s4_selected_long_contigs_sc_read_coverage_calculation/longctg_s4p3_selected_717_good_nucei_lib${sample}.txt
+    done
     
-    
+##### step 12 CORE FUNCTION: find linkage groups and match "homologous" linkage groups
+ 
+Input 1. bed files on read counts for each pollen
+    selectedbed=longctg_list_bed_files_selected717.txt
+Input 2. minimum correlation to build contact graph of haplotig markers    <= best 1
+    cor=0.55
+Input 3. contig sizes
+    ctgsize=/path/to/HiFiasm_ref_6366long_ctgs_selected.ctgsizes
+Input 4. expected number of linkage groups
+    nLG=48
+Input 5. maximum correlation to find "homologous haplotype linkage groups" <= best -1
+    ncor=-0.25
+Input 6. minimum contig size to select initial haplotig markers to build the backbone of linkage groups. 15000 bp worked, but might cause consufison when integrating other contigs! so here we are 100 kb to build the initial linkage group of haplotigs
+    min_hapctg_size=100000
+Check purpose: re-calculate intra-LG inter-CTG correlation for all related markers!
+    recalc="_recalc"
+
+    gamete_binning_tetra ${selectedbed} ${cor} ${ctgsize} ${nLG} ${ncor} ${min_hapctg_size} gamete_binning_selected717_cor${cor}_ncor${ncor}_minHap${min_hapctg_size}_ncorminus${recalc} >gamete_binning_selected717_cor${cor}_ncor${ncor}_ncorminus_minHap${min_hapctg_size}bp${recalc}.log
     
     
     
