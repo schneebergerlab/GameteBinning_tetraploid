@@ -8,7 +8,7 @@ All data are from a tetraploid (potato cultivar) of interest, including PacBio H
 single-cell sequencing of sufficient (e.g., hundreds of) gamete genomes. In this example, we use the following (available on NCBI Bioproject: PRJNA726019):
 
 * PacBio HiFi: long_reads_raw.fa
-* 10x Genomics+Illumina (sc): e.g., A_seq4414plus4431_R1.fastq.gz, A_seq4414plus4431_R2.fastq.gz 
+* 10x Genomics+Illumina (sc): e.g., A_seq4414plus4431_R1.fastq.gz and A_seq4414plus4431_R2.fastq.gz (from 4414_A_run633_SI-GA-A1,4461_A_run636_SI-GA-A1), B_seq4414plus4431_R1.fastq.gz and B_seq4414plus4431_R2.fastq.gz (4414_B_run633_SI-GA-B1,4461_B_run636_SI-GA-B1)
 * 10x Genomics+Illumina (sm): e.g., C_seq2806_R1.fastq.gz, C_seq2806_R2.fastq.gz (for depth analysis)
 
 Suppose all these raw data are collected in the path below, and for convenience, create softlinks for fastq files (Note, 10x Genomics tools need the full name, so we use both namings),
@@ -16,8 +16,11 @@ Suppose all these raw data are collected in the path below, and for convenience,
     wd=/path/to/reads/
     cd ${wd}
     
-    ln -s  A_seq4414plus4431_R1.fastq.gz gamete_libx_R1.fastq.gz
-    ln -s  A_seq4414plus4431_R2.fastq.gz gamete_libx_R2.fastq.gz
+    ln -s  A_seq4414plus4431_R1.fastq.gz gamete_libA_R1.fastq.gz
+    ln -s  A_seq4414plus4431_R2.fastq.gz gamete_libA_R2.fastq.gz
+    
+    ln -s  B_seq4414plus4431_R1.fastq.gz gamete_libB_R1.fastq.gz
+    ln -s  B_seq4414plus4431_R2.fastq.gz gamete_libB_R2.fastq.gz
 
 ##### Step 1. Trim reads
 
@@ -26,12 +29,15 @@ Trim 16 bp barcodes off R1's (10x Genomics library setting, including hexamer so
     wd=/path/to/reads/
     cd ${wd}
     
-    T10X_barcode_trimmer gamete_libx_R1.fastq.gz gamete_libx_R2.fastq.gz
+    T10X_barcode_trimmer gamete_libA_R1.fastq.gz gamete_libA_R2.fastq.gz
+    T10X_barcode_trimmer gamete_libB_R1.fastq.gz gamete_libB_R2.fastq.gz
     T10X_barcode_trimmer C_seq2806_R1.fastq.gz C_seq2806_R1.fastq.gz
 
 This leads to
 
-* gamete_libx_R1_clean.fastq.gz, gamete_libx_R2_clean.fastq.gz, and C_seq2806_R1_clean.fastq.gz, C_seq2806_R2_clean.fastq.gz
+* gamete_libA_R1_clean.fastq.gz, gamete_libA_R2_clean.fastq.gz 
+* gamete_libB_R1_clean.fastq.gz, gamete_libB_R2_clean.fastq.gz
+* C_seq2806_R1_clean.fastq.gz, C_seq2806_R2_clean.fastq.gz
 
 ##### Step 2. Preliminary assembly
 
@@ -74,7 +80,7 @@ Index the sequence as reference for later steps,
 Align pooled gamete reads to the reference
 
     refgenome=/path/to/curated_asm/HiFiasm_ref_6366long_ctgs_selected.fasta
-    bowtie2 -x ${refgenome} -1 /path/to/reads/gamete_libx_R1_clean.fastq.gz -2 /path/to/reads/gamete_libx_R2_clean.fastq.gz -p 20 | samtools view -@ 20 -bS - | samtools sort -@ 20 -o gamete_ManualCurated.bam -
+    bowtie2 -x ${refgenome} -1 /path/to/reads/gamete_libA_R1_clean.fastq.gz,/path/to/reads/gamete_libB_R1_clean.fastq.gz -2 /path/to/reads/gamete_libA_R2_clean.fastq.gz,/path/to/reads/gamete_libB_R2_clean.fastq.gz -p 20 | samtools view -@ 20 -bS - | samtools sort -@ 20 -o gamete_ManualCurated.bam -
     
 Remove duplicates and get position-wise depth
 
@@ -94,7 +100,7 @@ Align HiFi reads, remove non-primary alignments and get position-wise depth
     refgenome=/path/to/curated_asm/HiFiasm_ref_6366long_ctgs_selected.fasta
     minimap2 -ax map-pb -t 20 -N 1 --secondary=no ${refgenome} ${otavahifi} | samtools view -@ 20 -bS - | samtools sort -@ 20 -o HiFi_ManualCurated.bam -
     samtools view -h -F 3840 -bS HiFi_ManualCurated.bam | samtools sort -o HiFi_ManualCurated_clean.bam - 
-    samtools depth -Q 1 -a HiFi_ManualCurated_clean.bam > HiFi_ManualCurated_depth_clean.txt    
+    samtools depth -Q 1 -a HiFi_ManualCurated_clean.bam > HiFi_ManualCurated_depth_clean.txt
 
 Get position-wise sequencing depth 
 
@@ -133,7 +139,7 @@ We use DM assembly at chr-level - potato_dm_v404_all_pm_un.fasta - as reference 
     sed -i 's/chr00/chrX/' potato_dm_v404_all_pm_un.fasta
     sed -i 's/ChrUn/chrY/' potato_dm_v404_all_pm_un.fasta
 
-Correspondingly, we prepare "a JSON file - /file_aux/contig_defs.json - describing primary contigs", 
+Correspondingly, we prepare "a JSON file - /file_aux/contig_defs.json - describing primary contigs" (with below), 
 
     {
             "species_prefixes": [""],
@@ -155,62 +161,47 @@ Correspondingly, we prepare "a JSON file - /file_aux/contig_defs.json - describi
 
 and then index the genome with cellranger-dna,
 
-    refgenome=almond_genome.fa
+    refgenome=potato_dm_v404_all_pm_un.fa
     cellranger-dna mkref ${refgenome} /path/to/file_aux/contig_defs.json
 
-This will create a new reference folder of "/refdata-almond_genome/".
+This will create a new reference folder of "/refdata-potato_dm_v404_all_pm_un/".
 
 Correct 10x Genomics barcodes (note, if there are multiple libraries, this step needs to be done library by library, as same barcodes might be shared across libraries. However, different runs of the same library can be run together by setting option --sample=libx-run-1,libx-run-2\[,...\]),
 
-    cellranger-dna cnv --id=4279_A_run615_cellranger --reference=/path/to/refdata-almond_genome/ --fastq=/path/to/reads/ --sample=4279_A_run615_SI-GA-D4 --localcores=20 --localmem=30
+    cellranger-dna cnv --id=A_all3runs --reference=/path/to/refdata-potato_dm_v404_all_pm_un/ --fastq=/path/to/reads/ --sample=4414_A_run633_SI-GA-A1,4461_A_run636_SI-GA-A1 --localcores=40 --localmem=30
+
+    cellranger-dna cnv --id=B_all3runs --reference=/path/to/refdata-potato_dm_v404_all_pm_un/ --fastq=/path/to/reads/ --sample=4414_B_run633_SI-GA-B1,4461_B_run636_SI-GA-B1 --localcores=40 --localmem=30
 
 Sort the bam (from the above, which is with corrected barcode information) with read name
 
-    bam=/path/to/4279_A_run615_cellranger/outs/possorted_bam.bam
+    bam=/path/to/A_all3runs/outs/possorted_bam.bam
     samtools sort -n ${bam} -o RNsorted_bam.bam
 
 Create reads ligated with corrected barcode,
 
-    bam=/path/to/4279_A_run615_cellranger/outs/RNsorted_bam.bam
-    samtools view ${bam} | T10xbam2fq - 4279_A
+    bam=/path/to/A_all3runs/outs/RNsorted_bam.bam
+    samtools view ${bam} | T10xbam2fq - A
 
 This leads to
 
-    4279_A_fqfrom10xBam_bxCorrected_R1.fq.gz
-    4279_A_fqfrom10xBam_bxCorrected_R2.fq.gz
+    A_fqfrom10xBam_bxCorrected_R1.fq.gz
+    A_fqfrom10xBam_bxCorrected_R2.fq.gz
 
 Extract individual nuclei
 
-    R1=4279_A_fqfrom10xBam_bxCorrected_R1.fq.gz
-    R2=4279_A_fqfrom10xBam_bxCorrected_R2.fq.gz
+    R1=A_fqfrom10xBam_bxCorrected_R1.fq.gz
+    R2=A_fqfrom10xBam_bxCorrected_R2.fq.gz
     barcode_len=16
-    minimumRP=5000
-    min_readpair=10000000
+    minimumRP=40000
+    min_readpair=20000000
     asCellseparator ${barcode_len} ${R1} ${R2} ${minimumRP} ${min_readpair} cells_sep
-
-This would report something like below,
-
-    Info: R1 file: 4279_A_fqfrom10xBam_bxCorrected_R1.fq.gz
-    Info: total number of barcodes observed in file1: 8656307
-    Info: total number of reads    observed in file1: 124447727
-    	among the above, good with read pairs >= 5000:
-    	number of barcodes observed in file1: 401
-    	number of reads	   observed in file1: 103317664
-    Info: number of effective barcodes: 401
 
 Get list of good barcodes,
 
     cd /path/to/cells_sep
-    awk '$2>=5000' asCellseparator_intermediate_raw_barcode_stat.txt > barcode_over_5000rpairs.list
-
-Merge parts of read extraction
-
-    while read bc; do
-    	cd /path/to/cells_sep/${bc}
-    	cat *R1* > ${bc}_R1.fastq.gz
-    	cat *R2* > ${bc}_R2.fastq.gz
-    	cd ..
-    done < barcode_over_5000rpairs.list
+    awk '$2>=40000' asCellseparator_intermediate_raw_barcode_stat.txt > barcode_over_40000rpairs.list
+   
+Similarly, do it to library B.
 
 ##### step 7. Read alignment and variant calling for each gamete nuclei
 
