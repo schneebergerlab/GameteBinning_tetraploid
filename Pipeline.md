@@ -31,100 +31,42 @@ This leads to
 
 * gamete_libx_R1_clean.fastq.gz, gamete_libx_R2_clean.fastq.gz
 
-##### Step 2. Genome size estimation with cleaned reads
-
-Count k-mers (k=21),
-
-    wd=/path/to/kmer_analysis/
-    cd ${wd}
-    zcat /path/to/reads/gamete_libx_R1_clean.fastq.gz /path/to/reads/gamete_libx_R2_clean.fastq.gz | jellyfish count /dev/fd/0  -C -o gamete_21mer_trimmed -m 21 -t 20 -s 5G
-    jellyfish histo -h 200000 -o gamete_21mer_trimmed.histo gamete_21mer_trimmed
-
-Estimate genome size,
-
-    R
-    library("findGSE")
-    findGSE(histo="gamete_21mer_trimmed.histo", sizek=21, outdir=".", exp_hom=200)
-
-In apricot, we got ~ 242.5 Mb.
-
-##### Step 3. Preliminary assembly
+##### Step 2. Preliminary assembly
 
     wd=/path/to/pre_assembly/
     cd ${wd}
     
-    canu -p preasm -d canu_preasm useGrid=false genomeSize=242500000 corMhapSensitivity=high corMinCoverage=0 corOutCoverage=100 correctedErrorRate=0.105 -pacbio-raw long_reads_raw.fa executiveThreads=20 >canu_preasm.log
+    otavahifi=/path/to/reads/long_reads_raw.fa
+    hifiasm -t 10 -o otava ${otavahifi} >hifiasm.log
 
-or,
+This leads to preliminary assembly (we select the utg-level) by 
 
-    flye --pacbio-raw long_reads_raw.fa --genome-size 243m --out-dir flye_preasm --threads 4
+    cat otava.p_utg.gfa | grep '^S' | cut -f2,3 | awk '{print ">"$1"\n"$2}' > otava.p_utg.fasta
 
-This leads to preliminary assembly
+* otava.p_utg.fasta
 
-* pre_asm.fasta
-
-Polish the preliminary assembly using PacBio reads (using arrow/pilon), leading to the polished assembly
-
-* pre_asm_pilon.fasta
+(Polish the preliminary assembly - not necessary here.)
 
 Index it with bowtie2 for later read alignment (4 threads used)
 
-    bowtie2-build -f pre_asm_pilon.fasta pre_asm_pilon.fasta --threads 4
-
-Note, reference contig id might include "|", which is not accepted by many existing tools. Replace it with sed 's/|arrow|/_/g'.
+    bowtie2-build -f otava.p_utg.fasta otava.p_utg.fasta --threads 4
 
 
-##### Step 4. Curation of assembly (with purge_haplotigs pipeline)
+##### Step 3. Curation of assembly using read depth (purge repetitive contigs representing the same genomic regions)    
 
-Align Illumina reads to the preliminary assembly
+This leads to a version of manually curated assembly (please refer to manuscript for details)
 
+* HiFiasm_ref_pilon_6366long_ctgs_selected.fasta
+* HiFiasm_ref_pilon_6366long_ctgs_selected.chrsizes (this is contig size file of the assembly with format: contig_id	contig_size, tab-separated)
 
-    wd=/path/to/curated_asm/
-    cd ${wd}
-
-    bowtie2 -x /path/to/pre_assembly/pre_asm_pilon.fasta -1 /path/to/reads/gamete_libx_R1_clean.fastq.gz -2 /path/to/reads/gamete_libx_R2_clean.fastq.gz -p 20 | samtools view -@ 20 -bS - | samtools sort -@ 20 -o RP_PE_sorted.bam -
-
-Generate a coverage histogram
-
-    purge_haplotigs readhist -b RP_PE_sorted.bam -g /path/to/pre_assembly/pre_asm_pilon.fasta -t 4
-
-Select coverage cutoffs (./tmp_purge_haplotigs/MISC/aligned_pe.bam.histogram.csv) - here we have het-peak at 84x, hom-peak at 171x:
-
-    lowcutoff=40   -- this is the value at the valley on the left of het-peak
-    midcutoff=121  -- this is the value at the valley between het- and hom-peaks
-    highcutoff=342 -- this is ~2*hom-peak
-
-Analyse the coverage on a contig by contig basis. This script produces a contig coverage stats csv file with suspect contigs flagged for further analysis or removal.
-
-    purge_haplotigs contigcov -i RP_PE_sorted.bam.gencov -l ${lowcutoff} -m ${midcutoff} -h ${highcutoff} -o coverage_stats.csv -j 95 -s 80
-
-Run a BEDTools windowed coverage analysis (note, this would lead to curated.fasta and curated.haplotigs.fasta)
-
-    ABAM=RP_PE_sorted.bam
-    genome=/path/to/pre_assembly/pre_asm_pilon.fasta
-    purge_haplotigs purge -g ${genome} -c coverage_stats.csv -t 16 -o curated -d -b ${ABAM} -wind_min 1000 -wind_nmax 250 -v
-
-Re-check haplotigs (blast them with the curated genome, i.e., the one built up with selected primary contigs). If a defined haplotig is not covered by more than 50% (by primary contigs), correct it as a primary contig, and merge it with curated.fasta. (Note, visualization of the blast result with R_scripts_aux/visualize_blast_haplotig_against_purged.R -- necessary settings on paths needed).
-
-    db=curated.fasta
-    makeblastdb -in ${db} -dbtype nucl > formatdb.log
-    contigpath=/path/to/curated_asm/tmp_purge_haplotigs/CONTIGS/
-    grep '>' curated.haplotigs.fasta | sed 's/ /\t/g' | cut -f1 | sed 's/>//' > haplotigs_as_predicted_by_purgeHaplotig.list
-    while read ctg; do q=${ctg}.fasta; blastn -query ${contigpath}/${q} -db ${db} -out ${q}.oblast -outfmt 7 > blastall_blastn.log;done < ../haplotigs_as_predicted_by_purgeHaplotig.list
-
-This leads to a version of manually curated assembly
-
-* manually_curated.fasta
-* manually_curated.chrsizes (this is contig size file of the assembly with format: contig_id	contig_size, tab-separated)
-
-Note, although this is supposed to be a haploid assembly, it is built up with a high mixture of both haplotypes.
+Note, it is a mixture of four haplotypes (with potentially collapsed homozygous regions between haplotypes).
 
 Index the sequence as reference for later steps,
 
-    refgenome=manually_curated.fasta
+    refgenome=HiFiasm_ref_pilon_6366long_ctgs_selected.fasta
     bowtie2-build -f ${refgenome} ${refgenome} --threads 4
 
-##### Step 5. Read alignment of pooled gamete nuclei for SNP marker definition
+##### Step 4. Read alignment of pooled gamete nuclei for tig marker identification
 
     wd=/path/to/marker_creation/
     cd ${wd}
