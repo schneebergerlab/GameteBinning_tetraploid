@@ -27,10 +27,11 @@ Trim 16 bp barcodes off R1's (10x Genomics library setting, including hexamer so
     cd ${wd}
     
     T10X_barcode_trimmer gamete_libx_R1.fastq.gz gamete_libx_R2.fastq.gz
+    T10X_barcode_trimmer C_seq2806_R1.fastq.gz C_seq2806_R1.fastq.gz
 
 This leads to
 
-* gamete_libx_R1_clean.fastq.gz, gamete_libx_R2_clean.fastq.gz
+* gamete_libx_R1_clean.fastq.gz, gamete_libx_R2_clean.fastq.gz, and C_seq2806_R1_clean.fastq.gz, C_seq2806_R2_clean.fastq.gz
 
 ##### Step 2. Preliminary assembly
 
@@ -81,10 +82,10 @@ Remove duplicates and get position-wise depth
     samtools depth gamete_ManualCurated_markeduplicates.bam > gamete_ManualCurated_markeduplicates.depth.txt
     samtools index gamete_ManualCurated_markeduplicates.bam
     
-Similarly, align sm related to reads and get bam file 
+Similarly, align sm related reads and get bam file 
 
     refgenome=/path/to/curated_asm/HiFiasm_ref_6366long_ctgs_selected.fasta
-    bowtie2 -x ${refgenome} -1 /path/to/reads/C_seq2806_R1.fastq.gz -2 /path/to/reads/C_seq2806_R2.fastq.gz -p 20 | samtools view -@ 20 -bS - | samtools sort -@ 20 -o sm_ManualCurated.bam -
+    bowtie2 -x ${refgenome} -1 /path/to/reads/C_seq2806_R1_clean.fastq.gz -2 /path/to/reads/C_seq2806_R2_clean.fastq.gz -p 20 | samtools view -@ 20 -bS - | samtools sort -@ 20 -o sm_ManualCurated.bam -
     java -jar picard.jar MarkDuplicates I=sm_ManualCurated.bam O=sm_ManualCurated_markeduplicates.bam M=sm_ManualCurated_marked_dup_metrics.txt
     samtools depth sm_ManualCurated_markeduplicates.bam > sm_ManualCurated_markeduplicates.depth.txt
     samtools index sm_ManualCurated_markeduplicates.bam
