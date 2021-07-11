@@ -277,19 +277,34 @@ Note, we finally selected 717 nuclei to perform gamete binning, given under: "/a
 ##### step 12 CORE FUNCTION: find linkage groups and match "homologous" linkage groups
  
 Input 1. bed files on read counts for each pollen
+
     selectedbed=longctg_list_bed_files_selected717.txt
+
 Input 2. minimum correlation to build contact graph of haplotig markers    <= best 1
+
     cor=0.55
+
 Input 3. contig sizes
+
     ctgsize=/path/to/HiFiasm_ref_6366long_ctgs_selected.ctgsizes
+
 Input 4. expected number of linkage groups
+
     nLG=48
+
 Input 5. maximum correlation to find "homologous haplotype linkage groups" <= best -1
+
     ncor=-0.25
+
 Input 6. minimum contig size to select initial haplotig markers to build the backbone of linkage groups. 15000 bp worked, but might cause consufison when integrating other contigs! so here we are 100 kb to build the initial linkage group of haplotigs
+
     min_hapctg_size=100000
+
 Check purpose: re-calculate intra-LG inter-CTG correlation for all related markers!
+
     recalc="_recalc"
+
+Run:
 
     gamete_binning_tetra ${selectedbed} ${cor} ${ctgsize} ${nLG} ${ncor} ${min_hapctg_size} gamete_binning_selected717_cor${cor}_ncor${ncor}_minHap${min_hapctg_size}_ncorminus${recalc} >gamete_binning_selected717_cor${cor}_ncor${ncor}_ncorminus_minHap${min_hapctg_size}bp${recalc}.log
     
