@@ -1,4 +1,4 @@
-Pipeline
+Pipeline (updating not finished yet! 20210714)
 =
 This is the pipeline explaining how gamete binning in tetraploid (potato) works.
 
