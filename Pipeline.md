@@ -43,7 +43,7 @@ This leads to preliminary assembly (we select the utg-level) by
 
     cat otava.p_utg.gfa | grep '^S' | cut -f2,3 | awk '{print ">"$1"\n"$2}' > otava.p_utg.fasta
 
-* otava.p_utg.fasta
+* Post-process on otava.p_utg.fasta
 
 (Polish the preliminary assembly - not necessary, so not given here)
 
