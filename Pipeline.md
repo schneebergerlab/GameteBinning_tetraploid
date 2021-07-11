@@ -52,6 +52,9 @@ This leads to preliminary assembly (we select the utg-level) by
 
 This leads to a version of manually curated assembly (please refer to manuscript supplementary information, section "Initial tetraploid genome assembly, polishing and purging" for details)
 
+    wd=/path/to/curated_asm/
+    cd ${wd}
+    
 * HiFiasm_ref_6366long_ctgs_selected.fasta
 * HiFiasm_ref_6366long_ctgs_selected.chrsizes (this is the contig size file with two tab-separated columns: contig_id	contig_size)
 
