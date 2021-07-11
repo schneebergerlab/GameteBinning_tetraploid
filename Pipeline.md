@@ -94,6 +94,7 @@ Align HiFi reads, remove non-primary alignments and get position-wise depth
     refgenome=/path/to/curated_asm/HiFiasm_ref_6366long_ctgs_selected.fasta
     minimap2 -ax map-pb -t 20 -N 1 --secondary=no ${refgenome} ${otavahifi} | samtools view -@ 20 -bS - | samtools sort -@ 20 -o HiFi_ManualCurated.bam -
     samtools view -h -F 3840 -bS HiFi_ManualCurated.bam | samtools sort -o HiFi_ManualCurated_clean.bam - 
+    samtools depth -Q 1 -a HiFi_ManualCurated_clean.bam > HiFi_ManualCurated_depth_clean.txt    
 
 Get position-wise sequencing depth 
 
@@ -104,23 +105,55 @@ Get position-wise sequencing depth
 ##### step 5: find distribution of average depth at non-overlapping windows: winstep = winsize
 
     chrsizes=/path/to/HiFiasm_ref_6366long_ctgs_selected.ctgsizes
+    winsize=10000
+    
+    # => cnv_winsize10000_step10000_hq.txt
     samplecol=1
     avgdepth=113 # 137*0.85
-    winsize=10000
     CNV_HQ_v3 ${chrsizes} otava_Hifiasm_ref_pb_illu_depth_sum.txt ${winsize} ${winsize} ${samplecol} ${avgdepth}
+    
+    # => cnv_winsize10000_step10000_hq_HiFi_only.txt
+    samplecol=1
+    avgdepth=30 # HiFi only
+    CNV_HQ_v3 ${chrsizes} HiFi_ManualCurated_depth_clean.txt ${winsize} ${winsize} ${samplecol} ${avgdepth}
+    
+    
+##### step 6: new window marker generation => cnv_winsize10000_step10000_hq_markers_20210714_wsize50kb_final.txt
 
-##### Step 6. 10x Genomics barcode correction and nuclei separation
+    paste cnv_winsize10000_step10000_hq.txt cnv_winsize10000_step10000_hq_HiFi_only.txt | cut -f1-7,12,13 > cnv_winsize10000_step10000_hq_merged_vs_hifi.txt
+    tig_marker_finder cnv_winsize10000_step10000_hq_merged_vs_hifi.txt 113 30 50000 20210714 > tig_marker_finder.log
+
+##### Step 7. 10x Genomics barcode correction and nuclei separation
 
     wd=/path/to/individual_nuclei_extraction/
     cd ${wd}
 
-We use an artifical reference from almond at chr-level (in other cases, one can select a closely-related species with chr-level assembly):
+We use DM assembly at chr-level - potato_dm_v404_all_pm_un.fasta - as reference (download: http://solanaceae.plantbiology.msu.edu/pgsc_download.shtml), and prepare a chrsizes file - potato_dm_v404_all_pm_un_modified.chrsizes (two columns, tab-separated with chr_id chr_size):
 
-    wget http://getentry.ddbj.nig.ac.jp/getentry?database=na&accession_number=AP019297-AP019304&filetype=gz&limit=1000&format=fasta
-    gunzip fasta_na.AP019297-AP019304.txt.gz
-    sed 's/AP019297|AP019297\.1/chr1/g' fasta_na.AP019297-AP019304.txt| sed 's/AP019298|AP019298\.1/chr2/g' | sed 's/AP019299|AP019299\.1/chr3/g' | sed 's/AP019300|AP019300\.1/chr4/g' | sed 's/AP019301|AP019301\.1/chr5/g' | sed 's/AP019302|AP019302\.1/chr6/g' | sed 's/AP019303|AP019303\.1/chrX/g' | sed 's/AP019304|AP019304\.1/chrY/g' | sed 's/\./ /g' | sed 's/,//g'  | sed 's/ Prunus dulcis DNA pseudomolecule /_/g' > almond_genome.fa
+    sed -i 's/chr00/chrX/' potato_dm_v404_all_pm_un.fasta
+    sed -i 's/ChrUn/chrY/' potato_dm_v404_all_pm_un.fasta
 
-Correspondingly, we prepare "a JSON file - /file_aux/contig_defs.json - describing primary contigs", and then index the genome with cellranger-dna,
+Correspondingly, we prepare "a JSON file - /file_aux/contig_defs.json - describing primary contigs", 
+
+    {
+            "species_prefixes": [""],
+            "primary_contigs": [
+            "chr01", "chr02", "chr03","chr04", "chr05", "chr06", "chr07", "chr08", "chr09", "chr10", "chr11", "chr12", "chrX", "chrY"
+            ],
+            "sex_chromosomes": {
+                    "_male": {
+                            "chrX": 1,
+                            "chrY": 1
+                     },
+                     "_female": {
+                            "chrX": 2,
+                            "chrY": 0
+                     }
+            },
+            "non_nuclear_contigs": ["chrM"]
+    }
+
+and then index the genome with cellranger-dna,
 
     refgenome=almond_genome.fa
     cellranger-dna mkref ${refgenome} /path/to/file_aux/contig_defs.json
