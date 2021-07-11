@@ -46,12 +46,7 @@ This leads to preliminary assembly (we select the utg-level) by
 
 * otava.p_utg.fasta
 
-(Polish the preliminary assembly - not necessary, so not given here)
-
-Index it with bowtie2 for later read alignment (4 threads used)
-
-    bowtie2-build -f otava.p_utg.fasta otava.p_utg.fasta --threads 4
-
+(Polish the preliminary assembly - not necessary, so details not given here)
 
 ##### Step 3. Curation of assembly using read alignment depth (or, purge redundant contigs representing the same genomic regions)    
 
@@ -67,7 +62,7 @@ Index the sequence as reference for later steps,
     refgenome=HiFiasm_ref_6366long_ctgs_selected.fasta
     bowtie2-build -f ${refgenome} ${refgenome} --threads 4
 
-##### Step 4. Read alignment of pooled gamete nuclei sequencing for haplo/diplo/triplo/tetraplotig marker identification (note we used sc, sm and HiFi depth to collect more power to differentiate different types of contigs)
+##### Step 4. Read alignment of various sequencings for haplo/diplo/triplo/tetraplotig marker identification (note we used sc, sm and HiFi depth to collect more power to differentiate different types of contigs)
 
     wd=/path/to/marker_creation/
     cd ${wd}
