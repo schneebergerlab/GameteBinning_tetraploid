@@ -101,7 +101,7 @@ Get position-wise sequencing depth
     awk '{printf ("%s\t%s\t%s\n", $1, $2, $3+$4+$5)}' otava_Hifiasm_ref_pb_illu_depth.txt > otava_Hifiasm_ref_pb_illu_depth_sum.txt
     rm otava_Hifiasm_ref_pb_illu_depth.txt
     
-# step 5: find distribution of average depth at non-overlapping windows: winstep = winsize
+##### step 5: find distribution of average depth at non-overlapping windows: winstep = winsize
 
     chrsizes=/path/to/HiFiasm_ref_6366long_ctgs_selected.ctgsizes
     samplecol=1
