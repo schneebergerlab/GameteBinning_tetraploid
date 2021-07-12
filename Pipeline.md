@@ -333,7 +333,7 @@ Run:
     marker=/path/to/s11_selected_long_contigs_sc_read_coverage_genotype_v2/s4_gamete_binning_selected717_cor0.55_ncor-0.25_minHap100000_ncorminus_recalc_tmp_integrating_all_ctg_markers_to_LGs/s4p6_refine_grouping_final_window_markers_sorted.txt
     samtools view ${bam} | long_read_separator - ${marker} hifi_separation_20210714 > hifi_separation.log
 
-check how reads are groupped
+check how reads are grouped
 
     tail -n 62 hifi_separation.log
 
