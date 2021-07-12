@@ -5,7 +5,10 @@ This is the pipeline explaining how gamete binning in tetraploid (potato) works.
 ##### Step 0. Prepare data
 
 All data are from a tetraploid (potato cultivar) of interest, including PacBio HiFi reads from somatic tissue and short reads from
-single-cell sequencing of sufficient gamete genomes; note that here we also included additional Illumina sequencing (of 10x single-molecule libraries) for contig depth analysis (to define contig markers more reliably). Single-molecule libraries can be replaced with any other normal Illumina short read sequencings in future applications. In this example, we use the following (available on NCBI Bioproject PRJNA726019):
+single-cell sequencing of sufficient gamete genomes; note that here we also included additional Illumina sequencing (of 10x single-molecule libraries) for contig depth analysis (to define contig markers more reliably). Single-molecule libraries can be replaced with any other normal Illumina short read sequencings in future applications. In this example, suppose all these raw data (available on NCBI Bioproject PRJNA726019) are collected in the path below,
+
+    wd=/path/to/s0_reads/
+    cd ${wd}
 
 PacBio HiFi: 
 
@@ -22,17 +25,6 @@ PacBio HiFi:
 
     C_seq2806_R1.fastq.gz
     C_seq2806_R2.fastq.gz (combined from all runs)
-
-Suppose all these raw data are collected in the path below, and for convenience, we create softlinks for fastq files (Note, 10x Genomics tool needs formatted fastq names, so we will use both namings later),
-
-    wd=/path/to/s0_reads/
-    cd ${wd}
-    
-    ln -s  A_seq4414plus4431_R1.fastq.gz gamete_libA_R1.fastq.gz
-    ln -s  A_seq4414plus4431_R2.fastq.gz gamete_libA_R2.fastq.gz
-    
-    ln -s  B_seq4414plus4431_R1.fastq.gz gamete_libB_R1.fastq.gz
-    ln -s  B_seq4414plus4431_R2.fastq.gz gamete_libB_R2.fastq.gz
 
 ##### Step 1. Trim barcodes off short reads from 10x libraries - this is for pooled read alignment (for depth analysis and pollen genotyping)
 
