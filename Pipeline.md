@@ -412,7 +412,7 @@ you would see something like below:
         otavahifi=/path/to/s14_HiFi_separation/hifi_separation_20210714_window_marker_separated_reads/${fa}_reads.fa
         ll ${otavahifi}        
         # v0.7 no purge
-        bsub -q multicore20 -R "rusage[mem=40000]" -M 40000 -n 10 -o otava_hifiasm.log -e otava_hifiasm.err "hifiasm -t 10 -o ${fa} ${otavahifi}"        
+        hifiasm -t 10 -o ${fa} ${otavahifi} > otava_hifiasm.log
         cd ..
     done < ../fa_to_run.list
     
