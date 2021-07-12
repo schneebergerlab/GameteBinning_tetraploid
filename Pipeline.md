@@ -400,7 +400,21 @@ you would see something like below:
     Info: extract reads from bam/sam into linkage done. 
     Time consumed: 13030.3 seconds
 
+##### step 15 LG-wise assembly 
+
+    wd=/path/to/asm_version_20210714
+    cd ${wd}
     
+    while read fa; do
+        cd ${wd}
+        mkdir hifiasm_${fa}
+        cd hifiasm_${fa}        
+        otavahifi=/path/to/s14_HiFi_separation/hifi_separation_20210714_window_marker_separated_reads/${fa}_reads.fa
+        ll ${otavahifi}        
+        # v0.7 no purge
+        bsub -q multicore20 -R "rusage[mem=40000]" -M 40000 -n 10 -o otava_hifiasm.log -e otava_hifiasm.err "hifiasm -t 10 -o ${fa} ${otavahifi}"        
+        cd ..
+done < ../fa_to_run.list
     
     
     
