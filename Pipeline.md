@@ -264,7 +264,7 @@ Note, we finally selected 717 nuclei to perform gamete binning, given under: "/a
 
 ##### step 11 prepare nuclei depth data
 
-    wd=/path/to/s5_selected_long_contigs_sc_read_coverage_genotype_v2/
+    wd=/path/to/s11_selected_long_contigs_sc_read_coverage_genotype_v2/
     ls /path/to/individual_nuclei_extraction/sample_*_asCellseparator_40krp/*/longctg_*_win_marker_read_count_MQ1_updated.bed > longctg_list_bed_files.txt
     #
     >longctg_list_bed_files_selected717.txt
@@ -307,6 +307,111 @@ Check purpose: re-calculate intra-LG inter-CTG correlation for all related marke
 Run:
 
     gamete_binning_tetra ${selectedbed} ${cor} ${ctgsize} ${nLG} ${ncor} ${min_hapctg_size} gamete_binning_selected717_cor${cor}_ncor${ncor}_minHap${min_hapctg_size}_ncorminus${recalc} >gamete_binning_selected717_cor${cor}_ncor${ncor}_ncorminus_minHap${min_hapctg_size}bp${recalc}.log
+    
+##### step 13 some checkings
+
+    wd=/path/to/s11_selected_long_contigs_sc_read_coverage_genotype_v2/
+    cd ${wd}
+    min_hapctg_size=100000
+    cd s4_gamete_binning_selected717_cor0.55_ncor-0.25_minHap100000_ncorminus_recalc_tmp_integrating_all_ctg_markers_to_LGs/
+    sort -k1,1 -k2,2n s4p6_refine_grouping_final_window_markers.txt > s4p6_refine_grouping_final_window_markers_sorted.txt
+    # check LG-wise marker sizes 
+    >LG_total_sizes_final.txt
+    for i in {1..48}; do 
+        echo -n -e "LG"$i"\t" >>LG_total_sizes_final.txt
+        awk -v var="$i" '$5==var' s4p6_refine_grouping_final_window_markers_sorted.txt | awk '{s+=$3-$2+1} END {print s}' >> LG_total_sizes_final.txt
+    done 
+    # check inferred total assembly size 
+    awk '{s+=$2} END {print s}' LG_total_sizes_final.txt
+    # 
+    
+##### step 14 here we group HiFi reads to 1-48 linkage groups according to marker phasing/grouping at step 12-13.
+
+    wd=/path/to/s14_HiFi_separation/
+    cd ${wd}
+    bam=/path/to/marker_creation/HiFi_ManualCurated_clean.bam
+    marker=/path/to/s11_selected_long_contigs_sc_read_coverage_genotype_v2/s4_gamete_binning_selected717_cor0.55_ncor-0.25_minHap100000_ncorminus_recalc_tmp_integrating_all_ctg_markers_to_LGs/s4p6_refine_grouping_final_window_markers_sorted.txt
+    samtools view ${bam} | long_read_separator - ${marker} hifi_separation_20210714 > hifi_separation.log
+    #
+    # check how reads are groupped
+    tail -n 62 hifi_separation.log
+    # you would see something like below:
+    
+    Warning: there are a1=5968 alignments, totaling v1=0.0697008 Gb  without explicit CIAGR info -- collected in unmapped file.
+    Warning: there are a2=109882 alignments being secondary/supplementary alignment, skipped. 
+    Info: in total a4=7037721 reads from all=7153571 aligment lines collected (<-header line not counted; raw alignment including secondary etc - skipped in read sep). 
+    Info: number of pb alignment seqs WITHOUT linkage Info: 681266, totaling v2=9.90746 Gb
+          (u0=681266 unique reads in this cluster of no lg or not grouped. )
+ 
+    Info: distribution of pacbio reads in linkage groups: 
+ 
+ 	homLG_10_LG_2_reads.fa	132631	132631
+	homLG_10_LG_35_reads.fa	113291	113291
+	homLG_10_LG_3_reads.fa	134721	134721
+	homLG_10_LG_47_reads.fa	111901	111901
+	homLG_11_LG_10_reads.fa	106071	106071
+	homLG_11_LG_30_reads.fa	95197	95197
+	homLG_11_LG_32_reads.fa	101950	101950
+	homLG_11_LG_46_reads.fa	104772	104772
+	homLG_12_LG_1_reads.fa	163015	163015
+	homLG_12_LG_33_reads.fa	159507	159507
+	homLG_12_LG_34_reads.fa	133039	133039
+	homLG_12_LG_44_reads.fa	133466	133466
+	homLG_1_LG_11_reads.fa	90819	90819
+	homLG_1_LG_42_reads.fa	89757	89757
+	homLG_1_LG_45_reads.fa	83221	83221
+	homLG_1_LG_5_reads.fa	75891	75891
+	homLG_2_LG_12_reads.fa	113501	113501
+	homLG_2_LG_27_reads.fa	101865	101865
+	homLG_2_LG_31_reads.fa	114803	114803
+	homLG_2_LG_8_reads.fa	114322	114322
+	homLG_3_LG_13_reads.fa	149412	149412
+	homLG_3_LG_14_reads.fa	137305	137305
+	homLG_3_LG_18_reads.fa	142087	142087
+	homLG_3_LG_21_reads.fa	126934	126934
+	homLG_4_LG_15_reads.fa	121480	121480
+	homLG_4_LG_17_reads.fa	110504	110504
+	homLG_4_LG_23_reads.fa	118533	118533
+	homLG_4_LG_36_reads.fa	120575	120575
+	homLG_5_LG_19_reads.fa	162159	162159
+	homLG_5_LG_29_reads.fa	153538	153538
+	homLG_5_LG_43_reads.fa	132764	132764
+	homLG_5_LG_9_reads.fa	153981	153981
+	homLG_6_LG_20_reads.fa	214290	214290
+	homLG_6_LG_26_reads.fa	182949	182949
+	homLG_6_LG_48_reads.fa	200294	200294
+	homLG_6_LG_6_reads.fa	208353	208353
+	homLG_7_LG_22_reads.fa	141740	141740
+	homLG_7_LG_24_reads.fa	147419	147419
+	homLG_7_LG_39_reads.fa	121814	121814
+	homLG_7_LG_7_reads.fa	135765	135765
+	homLG_8_LG_25_reads.fa	107689	107689
+	homLG_8_LG_37_reads.fa	127179	127179
+	homLG_8_LG_38_reads.fa	107652	107652
+	homLG_8_LG_4_reads.fa	126167	126167
+	homLG_9_LG_16_reads.fa	168754	168754
+	homLG_9_LG_28_reads.fa	168063	168063
+	homLG_9_LG_40_reads.fa	148658	148658
+	homLG_9_LG_41_reads.fa	146657	146657
+	mapped_no_lg_pb_reads.fa	681266	681266
+	unmapped_starcigar_pb_reads.fa	5968	5968
+    Info: extract reads from bam/sam into linkage done. 
+    Time consumed: 13030.3 seconds
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
