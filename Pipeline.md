@@ -1,19 +1,19 @@
-Pipeline (updating still in progress 20210714!)
+Pipeline
 =
 This is the pipeline explaining how gamete binning in tetraploid (potato) works.
 
 ##### Step 0. Prepare data
 
 All data are from a tetraploid (potato cultivar) of interest, including PacBio HiFi reads from somatic tissue and short reads from
-single-cell sequencing of sufficient (e.g., hundreds of) gamete genomes. In this example, we use the following (available on NCBI Bioproject: PRJNA726019):
+single-cell sequencing of sufficient gamete genomes; note that here we also included additional Illumina sequencing (of 10x single-molecule libraries) for contig depth analysis (to more reliably define contig markers). Single-molecule libraries can be replaced with any other normal Illumina short read sequencings in future applications. In this example, we use the following (available on NCBI Bioproject PRJNA726019):
 
-* PacBio HiFi: long_reads_raw.fa
-* 10x Genomics+Illumina (sc): e.g., A_seq4414plus4431_R1.fastq.gz and A_seq4414plus4431_R2.fastq.gz (from 4414_A_run633_SI-GA-A1,4461_A_run636_SI-GA-A1), B_seq4414plus4431_R1.fastq.gz and B_seq4414plus4431_R2.fastq.gz (4414_B_run633_SI-GA-B1,4461_B_run636_SI-GA-B1)
-* 10x Genomics+Illumina (sm): e.g., C_seq2806_R1.fastq.gz, C_seq2806_R2.fastq.gz (for depth analysis)
+* PacBio HiFi: long_reads_raw.fa (or .fq)
+* 10x Genomics+Illumina (sc: single-cell): e.g., A_seq4414plus4431_R1.fastq.gz and A_seq4414plus4431_R2.fastq.gz (from 4414_A_run633_SI-GA-A1,4461_A_run636_SI-GA-A1), B_seq4414plus4431_R1.fastq.gz and B_seq4414plus4431_R2.fastq.gz (4414_B_run633_SI-GA-B1,4461_B_run636_SI-GA-B1)
+* 10x Genomics+Illumina (sm: single-molecule): e.g., C_seq2806_R1.fastq.gz, C_seq2806_R2.fastq.gz (combined from all runs)
 
-Suppose all these raw data are collected in the path below, and for convenience, create softlinks for fastq files (Note, 10x Genomics tools need the full name, so we use both namings),
+Suppose all these raw data are collected in the path below, and for convenience, create softlinks for fastq files (Note, 10x Genomics tool need formatted fq names, so we will use both namings),
 
-    wd=/path/to/reads/
+    wd=/path/to/s0_reads/
     cd ${wd}
     
     ln -s  A_seq4414plus4431_R1.fastq.gz gamete_libA_R1.fastq.gz
@@ -22,11 +22,11 @@ Suppose all these raw data are collected in the path below, and for convenience,
     ln -s  B_seq4414plus4431_R1.fastq.gz gamete_libB_R1.fastq.gz
     ln -s  B_seq4414plus4431_R2.fastq.gz gamete_libB_R2.fastq.gz
 
-##### Step 1. Trim reads
+##### Step 1. Trim barcodes off short reads from 10x libraries - this is for pooled read alignment for depth analysis and pollen genotyping
 
-Trim 16 bp barcodes off R1's (10x Genomics library setting, including hexamer so 22 bp trimmed off),
+Trim 16 bp barcodes off R1's (considering an additional hexamer, 22 bp would be trimmed off),
 
-    wd=/path/to/reads/
+    wd=/path/to/s0_reads/
     cd ${wd}
     
     T10X_barcode_trimmer gamete_libA_R1.fastq.gz gamete_libA_R2.fastq.gz
@@ -35,16 +35,16 @@ Trim 16 bp barcodes off R1's (10x Genomics library setting, including hexamer so
 
 This leads to
 
-* gamete_libA_R1_clean.fastq.gz, gamete_libA_R2_clean.fastq.gz 
-* gamete_libB_R1_clean.fastq.gz, gamete_libB_R2_clean.fastq.gz
-* C_seq2806_R1_clean.fastq.gz, C_seq2806_R2_clean.fastq.gz
+* trimmed_gamete_libA_R1.fastq.gz, trimmed_gamete_libA_R2.fastq.gz 
+* trimmed_gamete_libB_R1.fastq.gz, trimmed_gamete_libB_R2.fastq.gz
+* trimmed_C_seq2806_R1.fastq.gz, trimmed_C_seq2806_R2.fastq.gz
 
-##### Step 2. Preliminary assembly
+##### Step 2. Preliminary assembly - markers will be defined from these contigs (after depth analysis)
 
-    wd=/path/to/pre_assembly/
+    wd=/path/to/s2_pre_assembly/
     cd ${wd}
     
-    otavahifi=/path/to/reads/long_reads_raw.fa
+    otavahifi=/path/to/s0_reads/long_reads_raw.fa
     hifiasm -t 10 -o otava ${otavahifi} >hifiasm.log
 
 This leads to preliminary assembly (we select the utg-level) by 
@@ -80,7 +80,7 @@ Index the sequence as reference for later steps,
 Align pooled gamete reads to the reference
 
     refgenome=/path/to/curated_asm/HiFiasm_ref_6366long_ctgs_selected.fasta
-    bowtie2 -x ${refgenome} -1 /path/to/reads/gamete_libA_R1_clean.fastq.gz,/path/to/reads/gamete_libB_R1_clean.fastq.gz -2 /path/to/reads/gamete_libA_R2_clean.fastq.gz,/path/to/reads/gamete_libB_R2_clean.fastq.gz -p 20 | samtools view -@ 20 -bS - | samtools sort -@ 20 -o gamete_ManualCurated.bam -
+    bowtie2 -x ${refgenome} -1 /path/to/s0_reads/gamete_libA_R1_clean.fastq.gz,/path/to/s0_reads/gamete_libB_R1_clean.fastq.gz -2 /path/to/s0_reads/gamete_libA_R2_clean.fastq.gz,/path/to/s0_reads/gamete_libB_R2_clean.fastq.gz -p 20 | samtools view -@ 20 -bS - | samtools sort -@ 20 -o gamete_ManualCurated.bam -
     
 Remove duplicates and get position-wise depth
 
@@ -90,13 +90,13 @@ Remove duplicates and get position-wise depth
 Similarly, align sm related reads and get bam file 
 
     refgenome=/path/to/curated_asm/HiFiasm_ref_6366long_ctgs_selected.fasta
-    bowtie2 -x ${refgenome} -1 /path/to/reads/C_seq2806_R1_clean.fastq.gz -2 /path/to/reads/C_seq2806_R2_clean.fastq.gz -p 20 | samtools view -@ 20 -bS - | samtools sort -@ 20 -o sm_ManualCurated.bam -
+    bowtie2 -x ${refgenome} -1 /path/to/s0_reads/C_seq2806_R1_clean.fastq.gz -2 /path/to/s0_reads/C_seq2806_R2_clean.fastq.gz -p 20 | samtools view -@ 20 -bS - | samtools sort -@ 20 -o sm_ManualCurated.bam -
     java -jar picard.jar MarkDuplicates I=sm_ManualCurated.bam O=sm_ManualCurated_markeduplicates.bam M=sm_ManualCurated_marked_dup_metrics.txt
     samtools index sm_ManualCurated_markeduplicates.bam
     
 Align HiFi reads, remove non-primary alignments and get position-wise depth 
     
-    otavahifi=/path/to/reads/long_reads_raw.fa
+    otavahifi=/path/to/s0_reads/long_reads_raw.fa
     refgenome=/path/to/curated_asm/HiFiasm_ref_6366long_ctgs_selected.fasta
     minimap2 -ax map-pb -t 20 -N 1 --secondary=no ${refgenome} ${otavahifi} | samtools view -@ 20 -bS - | samtools sort -@ 20 -o HiFi_ManualCurated.bam -
     samtools view -h -F 3840 -bS HiFi_ManualCurated.bam | samtools sort -o HiFi_ManualCurated_clean.bam - 
@@ -124,10 +124,10 @@ Get position-wise sequencing depth
     CNV_HQ_v3 ${chrsizes} HiFi_ManualCurated_depth_clean.txt ${winsize} ${winsize} ${samplecol} ${avgdepth}
     
     
-##### step 6: new window marker generation => cnv_winsize10000_step10000_hq_markers_20210714_wsize50kb_final.txt
+##### step 6: new window marker generation => cnv_winsize10000_step10000_hq_markers_20210712_wsize50kb_final.txt
 
     paste cnv_winsize10000_step10000_hq.txt cnv_winsize10000_step10000_hq_HiFi_only.txt | cut -f1-7,12,13 > cnv_winsize10000_step10000_hq_merged_vs_hifi.txt
-    tig_marker_finder cnv_winsize10000_step10000_hq_merged_vs_hifi.txt 113 30 50000 20210714 > tig_marker_finder.log
+    tig_marker_finder cnv_winsize10000_step10000_hq_merged_vs_hifi.txt 113 30 50000 20210712 > tig_marker_finder.log
 
 ##### Step 7. 10x Genomics barcode correction and nuclei separation
 
@@ -168,8 +168,8 @@ This will create a new reference folder of "/refdata-potato_dm_v404_all_pm_un/".
 
 Correct 10x Genomics barcodes (note, if there are multiple libraries, this step needs to be done library by library, as same barcodes might be shared across libraries. However, different runs of the same library can be run together by setting option --sample=libx-run-1,libx-run-2\[,...\]),
 
-    cellranger-dna cnv --id=A_all3runs --reference=/path/to/refdata-potato_dm_v404_all_pm_un/ --fastq=/path/to/reads/ --sample=4414_A_run633_SI-GA-A1,4461_A_run636_SI-GA-A1 --localcores=40 --localmem=30
-    cellranger-dna cnv --id=B_all3runs --reference=/path/to/refdata-potato_dm_v404_all_pm_un/ --fastq=/path/to/reads/ --sample=4414_B_run633_SI-GA-B1,4461_B_run636_SI-GA-B1 --localcores=40 --localmem=30
+    cellranger-dna cnv --id=A_all3runs --reference=/path/to/refdata-potato_dm_v404_all_pm_un/ --fastq=/path/to/s0_reads/ --sample=4414_A_run633_SI-GA-A1,4461_A_run636_SI-GA-A1 --localcores=40 --localmem=30
+    cellranger-dna cnv --id=B_all3runs --reference=/path/to/refdata-potato_dm_v404_all_pm_un/ --fastq=/path/to/s0_reads/ --sample=4414_B_run633_SI-GA-B1,4461_B_run636_SI-GA-B1 --localcores=40 --localmem=30
 
 Sort the bam (from the above, which is with corrected barcode information) with read name
 
@@ -234,7 +234,7 @@ Similarly, extract cell-wise sequencings from library B.
     wd=/path/to/individual_nuclei_read_align/
     cd ${wd}
     
-    cut -f1-3 /path/to/cnv_winsize10000_step10000_hq_markers_20210714_wsize50kb_final.txt > cnv_winsize10000_step10000_hq_markers_20210714_wsize50kb_final.bed
+    cut -f1-3 /path/to/cnv_winsize10000_step10000_hq_markers_20210712_wsize50kb_final.txt > cnv_winsize10000_step10000_hq_markers_20210712_wsize50kb_final.bed
     MQ=1
     cellpath=/path/to/individual_nuclei_extraction/
     for sample in A B; do
@@ -242,7 +242,7 @@ Similarly, extract cell-wise sequencings from library B.
             cd ${cellpath}/sample_${sample}_asCellseparator_40krp/${r}
             samtools view -h -F 3840 -q ${MQ} -bS longctg_${r}_markeduplicates.bam | samtools sort -o longctg_${r}_markeduplicates_MQ${MQ}_clean.bam -
             samtools index longctg_${r}_markeduplicates_MQ${MQ}_clean.bam
-            bedtools coverage -counts -a /path/to/cnv_winsize10000_step10000_hq_markers_20210714_wsize50kb_final.bed -b longctg_${r}_markeduplicates_MQ${MQ}_clean.bam -bed > longctg_${r}_win_marker_read_count_MQ${MQ}.bed            
+            bedtools coverage -counts -a /path/to/cnv_winsize10000_step10000_hq_markers_20210712_wsize50kb_final.bed -b longctg_${r}_markeduplicates_MQ${MQ}_clean.bam -bed > longctg_${r}_win_marker_read_count_MQ${MQ}.bed            
         done < ${cellpath}/sample_${sample}_asCellseparator_40krp/${sample}_this_barcode_list
     done
     
@@ -250,7 +250,7 @@ Similarly, extract cell-wise sequencings from library B.
 
     cellpath=/path/to/individual_nuclei_extraction/
     cd ${cellpath}
-    marker=/path/to/cnv_winsize10000_step10000_hq_markers_20210714_wsize50kb_final.txt
+    marker=/path/to/cnv_winsize10000_step10000_hq_markers_20210712_wsize50kb_final.txt
     MQ=1
     for sample in A B; do
         while read r; do 
@@ -331,7 +331,7 @@ Run:
     cd ${wd}
     bam=/path/to/marker_creation/HiFi_ManualCurated_clean.bam
     marker=/path/to/s11_selected_long_contigs_sc_read_coverage_genotype_v2/s4_gamete_binning_selected717_cor0.55_ncor-0.25_minHap100000_ncorminus_recalc_tmp_integrating_all_ctg_markers_to_LGs/s4p6_refine_grouping_final_window_markers_sorted.txt
-    samtools view ${bam} | long_read_separator - ${marker} hifi_separation_20210714 > hifi_separation.log
+    samtools view ${bam} | long_read_separator - ${marker} hifi_separation_20210712 > hifi_separation.log
 
 check how reads are grouped
 
@@ -402,24 +402,23 @@ you would see something like below:
 
 ##### step 15 LG-wise assembly 
 
-    wd=/path/to/asm_version_20210714
+    wd=/path/to/asm_version_20210712
     cd ${wd}
     
     while read fa; do
         cd ${wd}
         mkdir hifiasm_${fa}
         cd hifiasm_${fa}        
-        otavahifi=/path/to/s14_HiFi_separation/hifi_separation_20210714_window_marker_separated_reads/${fa}_reads.fa
+        otavahifi=/path/to/s14_HiFi_separation/hifi_separation_20210712_window_marker_separated_reads/${fa}_reads.fa
         ll ${otavahifi}        
         # assemble haplotype: hifiasm v0.7
         hifiasm -t 10 -o ${fa} ${otavahifi} > otava_hifiasm.log
         # extract sequence
         cat ${fa}.p_ctg.gfa | grep '^S' | cut -f2,3 | awk '{print ">"$1"\n"$2}' > ${fa}.p_ctg.fasta
+        # calculate N50 etc, perl: v5.28.1
+        perl calc_CN50.pl ${fa}.p_ctg.fasta 110000000 1 > ${fa}.p_ctg.N50.calc.result.txt
         cd ..
     done < ../fa_to_run.list
-    
-    
-    
     
     
     
