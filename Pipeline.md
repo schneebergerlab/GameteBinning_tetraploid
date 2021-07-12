@@ -5,7 +5,7 @@ This is the pipeline explaining how gamete binning in tetraploid (potato) works.
 ##### Step 0. Prepare data
 
 All data are from a tetraploid (potato cultivar) of interest, including PacBio HiFi reads from somatic tissue and short reads from
-single-cell sequencing of sufficient gamete genomes; note that here we also included additional Illumina sequencing (of 10x single-molecule libraries) for contig depth analysis (to define contig markers more reliably). Single-molecule libraries can be replaced with any other normal Illumina short read sequencings in future applications. In this example, suppose all these raw data (available on NCBI Bioproject PRJNA726019) are collected in the path below,
+single-cell sequencing of sufficient gamete genomes; note that here we also included additional Illumina sequencing (of 10x single-molecule libraries) for contig depth analysis (to define contig markers more reliably). Single-molecule libraries can be replaced with any other normal Illumina short read sequencings in future applications. In this example, suppose all raw data (available on NCBI Bioproject PRJNA726019) are collected in the path below (where fastq file names might be indicatively different from downloaded ones),
 
     wd=/path/to/s0_reads/
     cd ${wd}
