@@ -325,17 +325,19 @@ Run:
     awk '{s+=$2} END {print s}' LG_total_sizes_final.txt
     # 
     
-##### step 14 here we group HiFi reads to 1-48 linkage groups according to marker phasing/grouping at step 12-13.
+##### step 14 group HiFi reads to 1-48 linkage groups according to marker phasing/grouping at step 12-13.
 
     wd=/path/to/s14_HiFi_separation/
     cd ${wd}
     bam=/path/to/marker_creation/HiFi_ManualCurated_clean.bam
     marker=/path/to/s11_selected_long_contigs_sc_read_coverage_genotype_v2/s4_gamete_binning_selected717_cor0.55_ncor-0.25_minHap100000_ncorminus_recalc_tmp_integrating_all_ctg_markers_to_LGs/s4p6_refine_grouping_final_window_markers_sorted.txt
     samtools view ${bam} | long_read_separator - ${marker} hifi_separation_20210714 > hifi_separation.log
-    #
-    # check how reads are groupped
+
+check how reads are groupped
+
     tail -n 62 hifi_separation.log
-    # you would see something like below:
+
+you would see something like below:
     
     Warning: there are a1=5968 alignments, totaling v1=0.0697008 Gb  without explicit CIAGR info -- collected in unmapped file.
     Warning: there are a2=109882 alignments being secondary/supplementary alignment, skipped. 
