@@ -411,8 +411,10 @@ you would see something like below:
         cd hifiasm_${fa}        
         otavahifi=/path/to/s14_HiFi_separation/hifi_separation_20210714_window_marker_separated_reads/${fa}_reads.fa
         ll ${otavahifi}        
-        # v0.7 no purge
+        # assemble haplotype: hifiasm v0.7
         hifiasm -t 10 -o ${fa} ${otavahifi} > otava_hifiasm.log
+        # extract sequence
+        cat ${fa}.p_ctg.gfa | grep '^S' | cut -f2,3 | awk '{print ">"$1"\n"$2}' > ${fa}.p_ctg.fasta
         cd ..
     done < ../fa_to_run.list
     
