@@ -23,7 +23,7 @@ PacBio HiFi:
     C_seq2806_R1.fastq.gz
     C_seq2806_R2.fastq.gz (combined from all runs)
 
-Suppose all these raw data are collected in the path below, and for convenience, create softlinks for fastq files (Note, 10x Genomics tool need formatted fq names, so we will use both namings),
+Suppose all these raw data are collected in the path below, and for convenience, we create softlinks for fastq files (Note, 10x Genomics tool needs formatted fastq names, so we will use both namings later),
 
     wd=/path/to/s0_reads/
     cd ${wd}
@@ -34,7 +34,7 @@ Suppose all these raw data are collected in the path below, and for convenience,
     ln -s  B_seq4414plus4431_R1.fastq.gz gamete_libB_R1.fastq.gz
     ln -s  B_seq4414plus4431_R2.fastq.gz gamete_libB_R2.fastq.gz
 
-##### Step 1. Trim barcodes off short reads from 10x libraries - this is for pooled read alignment for depth analysis and pollen genotyping
+##### Step 1. Trim barcodes off short reads from 10x libraries - this is for pooled read alignment (for depth analysis and pollen genotyping)
 
 Trim 16 bp barcodes off R1's (considering an additional hexamer, 22 bp would be trimmed off),
 
@@ -47,9 +47,14 @@ Trim 16 bp barcodes off R1's (considering an additional hexamer, 22 bp would be 
 
 This leads to
 
-* trimmed_gamete_libA_R1.fastq.gz, trimmed_gamete_libA_R2.fastq.gz 
-* trimmed_gamete_libB_R1.fastq.gz, trimmed_gamete_libB_R2.fastq.gz
-* trimmed_C_seq2806_R1.fastq.gz, trimmed_C_seq2806_R2.fastq.gz
+    trimmed_gamete_libA_R1.fastq.gz
+    trimmed_gamete_libA_R2.fastq.gz 
+    #
+    trimmed_gamete_libB_R1.fastq.gz
+    trimmed_gamete_libB_R2.fastq.gz
+    #
+    trimmed_C_seq2806_R1.fastq.gz
+    trimmed_C_seq2806_R2.fastq.gz
 
 ##### Step 2. Preliminary assembly - markers will be defined from these contigs (after depth analysis)
 
