@@ -350,7 +350,7 @@ Input 6. minimum contig size to select initial haplotig markers to build the bac
 
     min_hapctg_size=100000
 
-Check purpose: re-calculate intra-LG inter-CTG correlation for all related markers!
+Check purpose: re-calculate intra-LG inter-CTG correlation for all related markers
 
     recalc="_recalc"
 
@@ -452,21 +452,24 @@ you would see something like below:
 
 ##### step 15 LG-wise assembly 
 
-    wd=/path/to/asm_version_20210712
-    cd ${wd}
+    wd=/path/to/s15_asm_version_20210712/
+    cd ${wd} 
+    tail -n 62 /path/to/s14_HiFi_separation/hifi_separation.log | grep 'homLG' | sed 's/\t//g' | sed 's/_reads/\t/g' | cut -f1 > > fa_to_run.list
+    
+The files fa_to_run.list should contain haplotype chromsome ids at each line: homLG_10_LG_2, homLG_10_LG_35..., etc.
     
     while read fa; do
         cd ${wd}
         mkdir hifiasm_${fa}
         cd hifiasm_${fa}        
         otavahifi=/path/to/s14_HiFi_separation/hifi_separation_20210712_window_marker_separated_reads/${fa}_reads.fa
-        ll ${otavahifi}        
+        ll ${otavahifi}
         # assemble haplotype: hifiasm v0.7
         hifiasm -t 10 -o ${fa} ${otavahifi} > otava_hifiasm.log
         # extract sequence
         cat ${fa}.p_ctg.gfa | grep '^S' | cut -f2,3 | awk '{print ">"$1"\n"$2}' > ${fa}.p_ctg.fasta
         # calculate N50 etc, perl: v5.28.1
-        perl calc_CN50.pl ${fa}.p_ctg.fasta 110000000 1 > ${fa}.p_ctg.N50.calc.result.txt
+        perl /path/to/src_calc_N50/calc_CN50.pl ${fa}.p_ctg.fasta 100000000 1 > ${fa}.p_ctg.N50.calc.result.txt
         cd ..
     done < ../fa_to_run.list
     
