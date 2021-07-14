@@ -36,10 +36,10 @@ Raw:
 
 Combined:
 
-    A_seq4414plus4431_R1.fastq.gz
-    A_seq4414plus4431_R2.fastq.gz (from 4414_A_run633_SI-GA-A1,4461_A_run636_SI-GA-A1)
-    B_seq4414plus4431_R1.fastq.gz
-    B_seq4414plus4431_R2.fastq.gz (from 4414_B_run633_SI-GA-B1,4461_B_run636_SI-GA-B1)
+    A_seq4414plus4461_R1.fastq.gz
+    A_seq4414plus4461_R2.fastq.gz (from 4414_A_run633_SI-GA-A1,4461_A_run636_SI-GA-A1)
+    B_seq4414plus4461_R1.fastq.gz
+    B_seq4414plus4461_R2.fastq.gz (from 4414_B_run633_SI-GA-B1,4461_B_run636_SI-GA-B1)
     
 10x Genomics+Illumina (sm: single-molecule): 
 
@@ -53,17 +53,17 @@ Trim 16 bp barcodes off R1's (considering an additional hexamer, 22 bp would be 
     wd=/path/to/s0_reads/
     cd ${wd}
     
-    T10X_barcode_trimmer gamete_libA_R1.fastq.gz gamete_libA_R2.fastq.gz
-    T10X_barcode_trimmer gamete_libB_R1.fastq.gz gamete_libB_R2.fastq.gz
+    T10X_barcode_trimmer A_seq4414plus4461_R1.fastq.gz A_seq4414plus4461_R2.fastq.gz
+    T10X_barcode_trimmer B_seq4414plus4461_R1.fastq.gz B_seq4414plus4461_R2.fastq.gz
     T10X_barcode_trimmer C_seq2806_R1.fastq.gz C_seq2806_R1.fastq.gz
 
 This leads to
 
-    trimmed_gamete_libA_R1.fastq.gz
-    trimmed_gamete_libA_R2.fastq.gz 
+    trimmed_A_seq4414plus4461_R1.fastq.gz
+    trimmed_A_seq4414plus4461_R2.fastq.gz 
     #
-    trimmed_gamete_libB_R1.fastq.gz
-    trimmed_gamete_libB_R2.fastq.gz
+    trimmed_B_seq4414plus4461_R1.fastq.gz
+    trimmed_B_seq4414plus4461_R2.fastq.gz
     #
     trimmed_C_seq2806_R1.fastq.gz
     trimmed_C_seq2806_R2.fastq.gz
@@ -92,7 +92,7 @@ This leads to a version of manually curated assembly (please refer to manuscript
     cd ${wd}
     
 * HiFiasm_ref_6366long_ctgs_selected.fasta
-* HiFiasm_ref_6366long_ctgs_selected.chrsizes (this is the contig size file with two tab-separated columns: contig_id	contig_size)
+* HiFiasm_ref_6366long_ctgs_selected.chrsizes (this is the corresponding contig size file with two tab-separated columns: contig_id	contig_size)
 
 Note, it is a mixture of four haplotypes (with potentially collapsed homozygous regions between any more than one haplotype).
 
@@ -109,7 +109,7 @@ Index the sequence as reference for later steps,
 Align pooled gamete reads to the reference
 
     refgenome=/path/to/curated_asm/HiFiasm_ref_6366long_ctgs_selected.fasta
-    bowtie2 -x ${refgenome} -1 /path/to/s0_reads/gamete_libA_R1_clean.fastq.gz,/path/to/s0_reads/gamete_libB_R1_clean.fastq.gz -2 /path/to/s0_reads/gamete_libA_R2_clean.fastq.gz,/path/to/s0_reads/gamete_libB_R2_clean.fastq.gz -p 20 | samtools view -@ 20 -bS - | samtools sort -@ 20 -o gamete_ManualCurated.bam -
+    bowtie2 -x ${refgenome} -1 /path/to/s0_reads/trimmed_A_seq4414plus4461_R1.fastq.gz,/path/to/s0_reads/trimmed_B_seq4414plus4461_R1.fastq.gz -2 /path/to/s0_reads/trimmed_A_seq4414plus4461_R2.fastq.gz,/path/to/s0_reads/trimmed_B_seq4414plus4461_R2.fastq.gz -p 20 | samtools view -@ 20 -bS - | samtools sort -@ 20 -o gamete_ManualCurated.bam -
     
 Remove duplicates and get position-wise depth
 
