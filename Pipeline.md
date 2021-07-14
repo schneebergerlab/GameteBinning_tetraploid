@@ -86,7 +86,7 @@ This leads to preliminary assembly (we select the utg-level) by
 
 This leads to a version of manually curated assembly (please refer to manuscript supplementary information: section "Initial tetraploid genome assembly, polishing and purging" for details)
 
-    wd=/path/to/curated_asm/
+    wd=/path/to/s3_curated_asm/
     cd ${wd}
 
 We rename the purged assembly (with corresponding contig size information - two tab-separated columns: contig_id	contig_size) as below,
@@ -108,7 +108,7 @@ Index the sequence as reference for later steps,
 
 Align pooled gamete reads to the reference
 
-    refgenome=/path/to/curated_asm/HiFiasm_ref_6366long_ctgs_selected.fasta
+    refgenome=/path/to/s3_curated_asm/HiFiasm_ref_6366long_ctgs_selected.fasta
     bowtie2 -x ${refgenome} -1 /path/to/s0_reads/trimmed_A_seq4414plus4461_R1.fastq.gz,/path/to/s0_reads/trimmed_B_seq4414plus4461_R1.fastq.gz -2 /path/to/s0_reads/trimmed_A_seq4414plus4461_R2.fastq.gz,/path/to/s0_reads/trimmed_B_seq4414plus4461_R2.fastq.gz -p 20 | samtools view -@ 20 -bS - | samtools sort -@ 20 -o gamete_ManualCurated.bam -
     
 Remove duplicates and get position-wise depth
@@ -118,7 +118,7 @@ Remove duplicates and get position-wise depth
     
 Similarly, align sm related reads and get bam file 
 
-    refgenome=/path/to/curated_asm/HiFiasm_ref_6366long_ctgs_selected.fasta
+    refgenome=/path/to/s3_curated_asm/HiFiasm_ref_6366long_ctgs_selected.fasta
     bowtie2 -x ${refgenome} -1 /path/to/s0_reads/C_seq2806_R1_clean.fastq.gz -2 /path/to/s0_reads/C_seq2806_R2_clean.fastq.gz -p 20 | samtools view -@ 20 -bS - | samtools sort -@ 20 -o sm_ManualCurated.bam -
     java -jar picard.jar MarkDuplicates I=sm_ManualCurated.bam O=sm_ManualCurated_markeduplicates.bam M=sm_ManualCurated_marked_dup_metrics.txt
     samtools index sm_ManualCurated_markeduplicates.bam
@@ -126,7 +126,7 @@ Similarly, align sm related reads and get bam file
 Align HiFi reads, remove non-primary alignments and get position-wise depth 
     
     otavahifi=/path/to/s0_reads/4396_A_CCS.fastq
-    refgenome=/path/to/curated_asm/HiFiasm_ref_6366long_ctgs_selected.fasta
+    refgenome=/path/to/s3_curated_asm/HiFiasm_ref_6366long_ctgs_selected.fasta
     minimap2 -ax map-pb -t 20 -N 1 --secondary=no ${refgenome} ${otavahifi} | samtools view -@ 20 -bS - | samtools sort -@ 20 -o HiFi_ManualCurated.bam -
     samtools view -h -F 3840 -bS HiFi_ManualCurated.bam | samtools sort -o HiFi_ManualCurated_clean.bam - 
     samtools depth -Q 1 -a HiFi_ManualCurated_clean.bam > HiFi_ManualCurated_depth_clean.txt
