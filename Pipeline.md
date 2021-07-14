@@ -14,9 +14,27 @@ In this example pipeline, suppose all raw data (available on NCBI Bioproject PRJ
 
 PacBio HiFi: 
 
-    long_reads_raw.fa (or .fq)
+    4396_A_CCS.fastq
     
 10x Genomics+Illumina (sc: single-cell): 
+
+Raw:
+
+    4414_A_run633_SI-GA-A1_S1_L001_R1_001.fastq.gz
+    4414_A_run633_SI-GA-A1_S1_L001_R2_001.fastq.gz
+    4461_A_run636_SI-GA-A1_S3_L005_R1_001.fastq.gz
+    4461_A_run636_SI-GA-A1_S3_L005_R2_001.fastq.gz
+    4461_A_run636_SI-GA-A1_S3_L006_R1_001.fastq.gz
+    4461_A_run636_SI-GA-A1_S3_L006_R2_001.fastq.gz
+    4414_B_run633_SI-GA-B1_S2_L001_R1_001.fastq.gz
+    4414_B_run633_SI-GA-B1_S2_L001_R2_001.fastq.gz
+    4461_B_run636_SI-GA-B1_S2_L003_R1_001.fastq.gz
+    4461_B_run636_SI-GA-B1_S2_L003_R2_001.fastq.gz
+    4461_B_run636_SI-GA-B1_S2_L007_R1_001.fastq.gz
+    4461_B_run636_SI-GA-B1_S2_L007_R2_001.fastq.gz
+
+
+Combined:
 
     A_seq4414plus4431_R1.fastq.gz
     A_seq4414plus4431_R2.fastq.gz (from 4414_A_run633_SI-GA-A1,4461_A_run636_SI-GA-A1)
@@ -55,7 +73,7 @@ This leads to
     wd=/path/to/s2_pre_assembly/
     cd ${wd}
     
-    otavahifi=/path/to/s0_reads/long_reads_raw.fa
+    otavahifi=/path/to/s0_reads/4396_A_CCS.fastq
     hifiasm -t 10 -o otava ${otavahifi} >hifiasm.log
 
 This leads to preliminary assembly (we select the utg-level) by 
@@ -107,7 +125,7 @@ Similarly, align sm related reads and get bam file
     
 Align HiFi reads, remove non-primary alignments and get position-wise depth 
     
-    otavahifi=/path/to/s0_reads/long_reads_raw.fa
+    otavahifi=/path/to/s0_reads/4396_A_CCS.fastq
     refgenome=/path/to/curated_asm/HiFiasm_ref_6366long_ctgs_selected.fasta
     minimap2 -ax map-pb -t 20 -N 1 --secondary=no ${refgenome} ${otavahifi} | samtools view -@ 20 -bS - | samtools sort -@ 20 -o HiFi_ManualCurated.bam -
     samtools view -h -F 3840 -bS HiFi_ManualCurated.bam | samtools sort -o HiFi_ManualCurated_clean.bam - 
