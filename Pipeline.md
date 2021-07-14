@@ -139,7 +139,9 @@ Get position-wise sequencing depth
     
 ##### step 5: find distribution of average depth at non-overlapping windows: winstep = winsize
 
-    chrsizes=/path/to/HiFiasm_ref_6366long_ctgs_selected.ctgsizes
+    wd=/path/to/s4_marker_creation/
+    cd ${wd}
+    chrsizes=/path/to/s3_curated_asm/HiFiasm_ref_6366long_ctgs_selected.ctgsizes
     winsize=10000
     
     # => cnv_winsize10000_step10000_hq.txt
@@ -155,12 +157,15 @@ Get position-wise sequencing depth
     
 ##### step 6: new window marker generation => cnv_winsize10000_step10000_hq_markers_20210712_wsize50kb_final.txt
 
+    wd=/path/to/s4_marker_creation/
+    cd ${wd}
+    #
     paste cnv_winsize10000_step10000_hq.txt cnv_winsize10000_step10000_hq_HiFi_only.txt | cut -f1-7,12,13 > cnv_winsize10000_step10000_hq_merged_vs_hifi.txt
     tig_marker_finder cnv_winsize10000_step10000_hq_merged_vs_hifi.txt 113 30 50000 20210712 > tig_marker_finder.log
 
 ##### Step 7. 10x Genomics barcode correction and nuclei separation
 
-    wd=/path/to/individual_nuclei_extraction/
+    wd=/path/to/s7_individual_nuclei_extraction/
     cd ${wd}
 
 We use DM assembly at chr-level - potato_dm_v404_all_pm_un.fasta - as reference (download: http://solanaceae.plantbiology.msu.edu/pgsc_download.shtml), and prepare a chrsizes file - potato_dm_v404_all_pm_un_modified.chrsizes (two columns, tab-separated with chr_id chr_size):
