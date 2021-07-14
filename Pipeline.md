@@ -168,7 +168,9 @@ Get position-wise sequencing depth
     wd=/path/to/s7_individual_nuclei_extraction/
     cd ${wd}
 
-We use DM assembly at chr-level - potato_dm_v404_all_pm_un.fasta - as reference (download: http://solanaceae.plantbiology.msu.edu/pgsc_download.shtml), and prepare a chrsizes file - potato_dm_v404_all_pm_un_modified.chrsizes (two columns, tab-separated with chr_id chr_size):
+We use DM assembly at chr-level - potato_dm_v404_all_pm_un.fasta - as reference (download: http://solanaceae.plantbiology.msu.edu/pgsc_download.shtml), and prepare a chrsizes file - potato_dm_v404_all_pm_un_modified.chrsizes (two columns, tab-separated with chr_id chr_size).
+
+Rename some chromsome IDs (naming required by cellranger),
 
     sed -i 's/chr00/chrX/' potato_dm_v404_all_pm_un.fasta
     sed -i 's/ChrUn/chrY/' potato_dm_v404_all_pm_un.fasta
