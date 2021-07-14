@@ -273,7 +273,9 @@ Similarly, extract cell-wise sequencings from library B.
     
 ##### step 9. genotype each pollen at each contig marker
 
-Note 1: "-F 3840" == "-F 256 -F 512 -F 1024 -F 2048", excluding all kinds of non-primary alignment! - note 2: MQ=5 is too stringent that it was observed some pollen lost coverage at haplotig markers (where there were primary-reads with MQ=1); need to use MQ1: found with IGV
+Note 1: "-F 3840" == "-F 256 -F 512 -F 1024 -F 2048", excluding all kinds of non-primary alignment!
+
+Note 2: MQ=5 is too stringent that it was observed some pollen lost coverage at haplotig markers (where there were primary-reads with MQ=1); need to use MQ1: found with IGV.
 
     wd=/path/to/s8_individual_nuclei_read_align/
     cd ${wd}
