@@ -456,7 +456,7 @@ you would see something like below:
     cd ${wd} 
     tail -n 62 /path/to/s14_HiFi_separation/hifi_separation.log | grep 'homLG' | sed 's/\t//g' | sed 's/_reads/\t/g' | cut -f1 > > fa_to_run.list
     
-The files fa_to_run.list should contain haplotype chromsome ids at each line: homLG_10_LG_2, homLG_10_LG_35..., etc.
+The file "fa_to_run.list" should contain haplotype chromsome ids at each line: homLG_10_LG_2, homLG_10_LG_35..., etc.
     
     while read fa; do
         cd ${wd}
