@@ -175,7 +175,7 @@ Rename some chromsome IDs (naming required by cellranger),
     sed -i 's/chr00/chrX/' potato_dm_v404_all_pm_un.fasta
     sed -i 's/ChrUn/chrY/' potato_dm_v404_all_pm_un.fasta
 
-Correspondingly, we prepare "a JSON file - /file_aux/contig_defs.json - describing primary contigs" (with below), 
+Correspondingly, we prepare "a JSON file - available under /file_aux/: contig_defs.json - describing primary contigs" (with below), 
 
     {
             "species_prefixes": [""],
