@@ -308,9 +308,10 @@ Note 2: MQ=5 is too stringent that it was observed some pollen lost coverage at 
     
 ##### step 11 prepare nuclei depth data
 
-Note, we finally selected 717 nuclei to perform gamete binning (for details, please check Supplementary information: Section "Selection of single-cell sequencings"), available under: "/aux_data/", i.e., longctg_s4p3_selected_717_good_nucei_lib[A|B].txt
+Note, we finally selected 717 nuclei to perform gamete binning (for details, please check Supplementary information: Section "Selection of single-cell sequencings"), for which barcodes are available under: "/aux_data/", i.e., longctg_s4p3_selected_717_good_nucei_lib[A|B].txt
 
     wd=/path/to/s11_selected_long_contigs_sc_read_coverage_genotype_v2/
+    cd ${wd}
     ls /path/to/s7_individual_nuclei_extraction/sample_*_asCellseparator_40krp/*/longctg_*_win_marker_read_count_MQ1_updated.bed > longctg_list_bed_files.txt
     #
     >longctg_list_bed_files_selected717.txt
@@ -320,7 +321,10 @@ Note, we finally selected 717 nuclei to perform gamete binning (for details, ple
         done < ../s4_selected_long_contigs_sc_read_coverage_calculation/longctg_s4p3_selected_717_good_nucei_lib${sample}.txt
     done
     
-##### step 12 CORE FUNCTION: find linkage groups and match "homologous" linkage groups
+##### step 12 CORE FUNCTION of Gamete Binning: find linkage groups and match "homologous" linkage groups
+ 
+    wd=/path/to/s11_selected_long_contigs_sc_read_coverage_genotype_v2/
+    cd ${wd} 
  
 Input 1. bed files on read counts for each pollen
 
