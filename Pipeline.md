@@ -246,7 +246,7 @@ Similarly, extract cell-wise sequencings from library B.
     
     cellpath=/path/to/s7_individual_nuclei_extraction/
     cd ${cellpath}/
-    refgenome=/path/to/HiFiasm_ref_6366long_ctgs_selected.fasta
+    refgenome=/path/to/s3_curated_asm/HiFiasm_ref_6366long_ctgs_selected.fasta
     for sample in A B; do
         cd ${cellpath}/sample_${sample}_asCellseparator_40krp/
         # get individual barcode list
@@ -323,7 +323,7 @@ Input 2. minimum correlation to build contact graph of haplotig markers    <= be
 
 Input 3. contig sizes
 
-    ctgsize=/path/to/HiFiasm_ref_6366long_ctgs_selected.ctgsizes
+    ctgsize=/path/to/s3_curated_asm/HiFiasm_ref_6366long_ctgs_selected.ctgsizes
 
 Input 4. expected number of linkage groups
 
