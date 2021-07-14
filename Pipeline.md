@@ -84,13 +84,15 @@ This leads to preliminary assembly (we select the utg-level) by
 
 ##### Step 3. Curation of assembly using read alignment depth (or, purge redundant contigs representing the same genomic regions)    
 
-This leads to a version of manually curated assembly (please refer to manuscript supplementary information, section "Initial tetraploid genome assembly, polishing and purging" for details)
+This leads to a version of manually curated assembly (please refer to manuscript supplementary information: section "Initial tetraploid genome assembly, polishing and purging" for details)
 
     wd=/path/to/curated_asm/
     cd ${wd}
+
+We rename the purged assembly (with corresponding contig size information - two tab-separated columns: contig_id	contig_size) as below,
     
 * HiFiasm_ref_6366long_ctgs_selected.fasta
-* HiFiasm_ref_6366long_ctgs_selected.chrsizes (this is the corresponding contig size file with two tab-separated columns: contig_id	contig_size)
+* HiFiasm_ref_6366long_ctgs_selected.chrsizes
 
 Note, it is a mixture of four haplotypes (with potentially collapsed homozygous regions between any more than one haplotype).
 
