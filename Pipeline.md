@@ -230,7 +230,11 @@ Extract individual nuclei
     barcode_len=16
     minimumRP=40000
     min_readpair=20000000
-    asCellseparator ${barcode_len} ${R1} ${R2} ${minimumRP} ${min_readpair} cells_sep
+    asCellseparator ${barcode_len} ${R1} ${R2} ${minimumRP} ${min_readpair} sample_${sample}_asCellseparator_40krp
+    
+Barcode-specific fastq file(s) will be collected under 
+
+    sample_${sample}_asCellseparator_40krp
 
 Get list of good barcodes,
 
