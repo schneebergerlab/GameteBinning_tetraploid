@@ -230,15 +230,16 @@ Extract individual nuclei
     barcode_len=16
     minimumRP=40000
     min_readpair=20000000
-    asCellseparator ${barcode_len} ${R1} ${R2} ${minimumRP} ${min_readpair} sample_${sample}_asCellseparator_40krp
+    mkdir sample_${sample}_asCellseparator_40krp
+    cd sample_${sample}_asCellseparator_40krp
+    asCellseparator ${barcode_len} ${R1} ${R2} ${minimumRP} ${min_readpair} ./
     
 Barcode-specific fastq file(s) will be collected under 
 
-    sample_${sample}_asCellseparator_40krp
+    sample_${sample}_asCellseparator_40krp/XXXbarcodeXXX/
 
 Get list of good barcodes,
 
-    cd /path/to/cells_sep
     awk '$2>=40000' asCellseparator_intermediate_raw_barcode_stat.txt > barcode_over_40000rpairs.list
    
 Similarly, extract cell-wise sequencings from library B.
@@ -262,7 +263,7 @@ Similarly, extract cell-wise sequencings from library B.
             R1=${R1//[[:space:]]/,}
             R2=`ls part*_${bc}_R2.fq.gz`
             R2=${R2//[[:space:]]/,}
-            bowtie2 -p 1 -x ${refgenome} -1 \${R1} -2 \${R2} 2> longctg_bowtie2.err | samtools view -@ 1 -bS - | samtools sort -@ 1 -o longctg_${bc}.bam -
+            bowtie2 -p 1 -x ${refgenome} -1 ${R1} -2 ${R2} 2> longctg_bowtie2.err | samtools view -@ 1 -bS - | samtools sort -@ 1 -o longctg_${bc}.bam -
             samtools index longctg_${bc}.bam
             java -jar picard.jar MarkDuplicates I=longctg_${bc}.bam O=longctg_${bc}_markeduplicates.bam M=longctg_${bc}_marked_dup_metrics.txt
             samtools index longctg_${bc}_markeduplicates.bam
@@ -270,12 +271,14 @@ Similarly, extract cell-wise sequencings from library B.
         cd ${cellpath}
     done
     
-##### step 9. genotype each pollen at each contig marker - note 1: "-F 3840" == "-F 256 -F 512 -F 1024 -F 2048", excluding all kinds of non-primary alignment! - note 2: MQ=5 is too stringent that it was observed some pollen lost coverage at haplotig markers (where there were primary-reads with MQ=1); need to use MQ1: found with IGV
+##### step 9. genotype each pollen at each contig marker
+
+Note 1: "-F 3840" == "-F 256 -F 512 -F 1024 -F 2048", excluding all kinds of non-primary alignment! - note 2: MQ=5 is too stringent that it was observed some pollen lost coverage at haplotig markers (where there were primary-reads with MQ=1); need to use MQ1: found with IGV
 
     wd=/path/to/s8_individual_nuclei_read_align/
     cd ${wd}
     
-    cut -f1-3 /path/to/cnv_winsize10000_step10000_hq_markers_20210712_wsize50kb_final.txt > cnv_winsize10000_step10000_hq_markers_20210712_wsize50kb_final.bed
+    cut -f1-3 /path/to/s4_marker_creation/cnv_winsize10000_step10000_hq_markers_20210712_wsize50kb_final.txt > cnv_winsize10000_step10000_hq_markers_20210712_wsize50kb_final.bed
     MQ=1
     cellpath=/path/to/s7_individual_nuclei_extraction/
     for sample in A B; do
@@ -283,7 +286,7 @@ Similarly, extract cell-wise sequencings from library B.
             cd ${cellpath}/sample_${sample}_asCellseparator_40krp/${r}
             samtools view -h -F 3840 -q ${MQ} -bS longctg_${r}_markeduplicates.bam | samtools sort -o longctg_${r}_markeduplicates_MQ${MQ}_clean.bam -
             samtools index longctg_${r}_markeduplicates_MQ${MQ}_clean.bam
-            bedtools coverage -counts -a /path/to/cnv_winsize10000_step10000_hq_markers_20210712_wsize50kb_final.bed -b longctg_${r}_markeduplicates_MQ${MQ}_clean.bam -bed > longctg_${r}_win_marker_read_count_MQ${MQ}.bed            
+            bedtools coverage -counts -a /path/to/s8_individual_nuclei_read_align/cnv_winsize10000_step10000_hq_markers_20210712_wsize50kb_final.bed -b longctg_${r}_markeduplicates_MQ${MQ}_clean.bam -bed > longctg_${r}_win_marker_read_count_MQ${MQ}.bed            
         done < ${cellpath}/sample_${sample}_asCellseparator_40krp/${sample}_this_barcode_list
     done
     
@@ -291,7 +294,7 @@ Similarly, extract cell-wise sequencings from library B.
 
     cellpath=/path/to/s7_individual_nuclei_extraction/
     cd ${cellpath}
-    marker=/path/to/cnv_winsize10000_step10000_hq_markers_20210712_wsize50kb_final.txt
+    marker=/path/to/s4_marker_creation/cnv_winsize10000_step10000_hq_markers_20210712_wsize50kb_final.txt
     MQ=1
     for sample in A B; do
         while read r; do 
