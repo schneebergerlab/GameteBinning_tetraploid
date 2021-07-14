@@ -292,7 +292,7 @@ Note 2: MQ=5 is too stringent that it was observed some pollen lost coverage at 
         done < ${cellpath}/sample_${sample}_asCellseparator_40krp/${sample}_this_barcode_list
     done
     
-##### step 10 add more info on markers to read cnt file 
+##### step 10 add more info on markers to read cnt file of each cell 
 
     cellpath=/path/to/s7_individual_nuclei_extraction/
     cd ${cellpath}
@@ -306,9 +306,9 @@ Note 2: MQ=5 is too stringent that it was observed some pollen lost coverage at 
         done < ${cellpath}/sample_${sample}_asCellseparator_40krp/${sample}_this_barcode_list
     done
     
-Note, we finally selected 717 nuclei to perform gamete binning, given under: "/aux_data/", i.e., longctg_s4p3_selected_717_good_nucei_lib[A|B].txt
-
 ##### step 11 prepare nuclei depth data
+
+Note, we finally selected 717 nuclei to perform gamete binning (for details, please check Supplementary information: Section "Selection of single-cell sequencings"), available under: "/aux_data/", i.e., longctg_s4p3_selected_717_good_nucei_lib[A|B].txt
 
     wd=/path/to/s11_selected_long_contigs_sc_read_coverage_genotype_v2/
     ls /path/to/s7_individual_nuclei_extraction/sample_*_asCellseparator_40krp/*/longctg_*_win_marker_read_count_MQ1_updated.bed > longctg_list_bed_files.txt
