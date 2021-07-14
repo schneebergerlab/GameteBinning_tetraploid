@@ -246,7 +246,7 @@ Similarly, extract cell-wise sequencings from library B.
 
 ##### step 8. read alignment for each pollen genome sequencing
 
-    wd=/path/to/s8_individual_nuclei_read_align/
+    wd=/path/to/s7_individual_nuclei_extraction/
     cd ${wd}
     
     cellpath=/path/to/s7_individual_nuclei_extraction/
@@ -277,7 +277,7 @@ Note 1: "-F 3840" == "-F 256 -F 512 -F 1024 -F 2048", excluding all kinds of non
 
 Note 2: MQ=5 is too stringent that it was observed some pollen lost coverage at haplotig markers (where there were primary-reads with MQ=1); need to use MQ1: found with IGV.
 
-    wd=/path/to/s8_individual_nuclei_read_align/
+    wd=/path/to/s7_individual_nuclei_extraction/
     cd ${wd}
     
     cut -f1-3 /path/to/s4_marker_creation/cnv_winsize10000_step10000_hq_markers_20210712_wsize50kb_final.txt > cnv_winsize10000_step10000_hq_markers_20210712_wsize50kb_final.bed
@@ -288,7 +288,7 @@ Note 2: MQ=5 is too stringent that it was observed some pollen lost coverage at 
             cd ${cellpath}/sample_${sample}_asCellseparator_40krp/${r}
             samtools view -h -F 3840 -q ${MQ} -bS longctg_${r}_markeduplicates.bam | samtools sort -o longctg_${r}_markeduplicates_MQ${MQ}_clean.bam -
             samtools index longctg_${r}_markeduplicates_MQ${MQ}_clean.bam
-            bedtools coverage -counts -a /path/to/s8_individual_nuclei_read_align/cnv_winsize10000_step10000_hq_markers_20210712_wsize50kb_final.bed -b longctg_${r}_markeduplicates_MQ${MQ}_clean.bam -bed > longctg_${r}_win_marker_read_count_MQ${MQ}.bed            
+            bedtools coverage -counts -a /path/to/s7_individual_nuclei_extraction/cnv_winsize10000_step10000_hq_markers_20210712_wsize50kb_final.bed -b longctg_${r}_markeduplicates_MQ${MQ}_clean.bam -bed > longctg_${r}_win_marker_read_count_MQ${MQ}.bed            
         done < ${cellpath}/sample_${sample}_asCellseparator_40krp/${sample}_this_barcode_list
     done
     
