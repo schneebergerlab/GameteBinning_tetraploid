@@ -207,7 +207,6 @@ This will create a new reference folder under current folder.
 Correct 10x Genomics barcodes (note, if there are multiple libraries, this step needs to be done library by library, as same barcodes might be shared across libraries. However, different runs of the same library can be run together by setting option --sample=libx-run-1,libx-run-2\[,...\]),
 
     cellranger-dna cnv --id=A_all3runs --reference=/path/to/refdata-potato_dm_v404_all_pm_un/ --fastq=/path/to/s0_reads/ --sample=4414_A_run633_SI-GA-A1,4461_A_run636_SI-GA-A1 --localcores=40 --localmem=30
-    cellranger-dna cnv --id=B_all3runs --reference=/path/to/refdata-potato_dm_v404_all_pm_un/ --fastq=/path/to/s0_reads/ --sample=4414_B_run633_SI-GA-B1,4461_B_run636_SI-GA-B1 --localcores=40 --localmem=30
 
 Sort the bam (from the above, which is with corrected barcode information) with read name
 
