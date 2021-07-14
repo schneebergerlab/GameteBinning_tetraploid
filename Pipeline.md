@@ -241,10 +241,10 @@ Similarly, extract cell-wise sequencings from library B.
 
 ##### step 8. read alignment for each pollen genome sequencing
 
-    wd=/path/to/individual_nuclei_read_align/
+    wd=/path/to/s8_individual_nuclei_read_align/
     cd ${wd}
     
-    cellpath=/path/to/individual_nuclei_extraction/
+    cellpath=/path/to/s7_individual_nuclei_extraction/
     cd ${cellpath}/
     refgenome=/path/to/HiFiasm_ref_6366long_ctgs_selected.fasta
     for sample in A B; do
@@ -268,12 +268,12 @@ Similarly, extract cell-wise sequencings from library B.
     
 ##### step 9. genotype each pollen at each contig marker - note 1: "-F 3840" == "-F 256 -F 512 -F 1024 -F 2048", excluding all kinds of non-primary alignment! - note 2: MQ=5 is too stringent that it was observed some pollen lost coverage at haplotig markers (where there were primary-reads with MQ=1); need to use MQ1: found with IGV
 
-    wd=/path/to/individual_nuclei_read_align/
+    wd=/path/to/s8_individual_nuclei_read_align/
     cd ${wd}
     
     cut -f1-3 /path/to/cnv_winsize10000_step10000_hq_markers_20210712_wsize50kb_final.txt > cnv_winsize10000_step10000_hq_markers_20210712_wsize50kb_final.bed
     MQ=1
-    cellpath=/path/to/individual_nuclei_extraction/
+    cellpath=/path/to/s7_individual_nuclei_extraction/
     for sample in A B; do
         while read r; do 
             cd ${cellpath}/sample_${sample}_asCellseparator_40krp/${r}
@@ -285,7 +285,7 @@ Similarly, extract cell-wise sequencings from library B.
     
 ##### step 10 add more info on markers to read cnt file 
 
-    cellpath=/path/to/individual_nuclei_extraction/
+    cellpath=/path/to/s7_individual_nuclei_extraction/
     cd ${cellpath}
     marker=/path/to/cnv_winsize10000_step10000_hq_markers_20210712_wsize50kb_final.txt
     MQ=1
@@ -302,7 +302,7 @@ Note, we finally selected 717 nuclei to perform gamete binning, given under: "/a
 ##### step 11 prepare nuclei depth data
 
     wd=/path/to/s11_selected_long_contigs_sc_read_coverage_genotype_v2/
-    ls /path/to/individual_nuclei_extraction/sample_*_asCellseparator_40krp/*/longctg_*_win_marker_read_count_MQ1_updated.bed > longctg_list_bed_files.txt
+    ls /path/to/s7_individual_nuclei_extraction/sample_*_asCellseparator_40krp/*/longctg_*_win_marker_read_count_MQ1_updated.bed > longctg_list_bed_files.txt
     #
     >longctg_list_bed_files_selected717.txt
     for sample in A B; do 
