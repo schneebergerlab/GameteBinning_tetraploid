@@ -91,8 +91,8 @@ This leads to a version of manually curated assembly (please refer to manuscript
 
 We rename the purged assembly (with corresponding contig size information - two tab-separated columns: contig_id	contig_size) as below,
     
-* HiFiasm_ref_6366long_ctgs_selected.fasta
-* HiFiasm_ref_6366long_ctgs_selected.chrsizes
+    HiFiasm_ref_6366long_ctgs_selected.fasta
+    HiFiasm_ref_6366long_ctgs_selected.chrsizes
 
 Note, it is a mixture of four haplotypes (with potentially collapsed homozygous regions between any more than one haplotype).
 
