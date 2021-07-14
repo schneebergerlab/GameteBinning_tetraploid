@@ -103,7 +103,7 @@ Index the sequence as reference for later steps,
 
 ##### Step 4. Read alignment of various sequencings for haplo/diplo/triplo/tetraplotig marker identification (note we used sc, sm and HiFi depth to collect more power to differentiate different types of contigs)
 
-    wd=/path/to/marker_creation/
+    wd=/path/to/s4_marker_creation/
     cd ${wd}
 
 Align pooled gamete reads to the reference
@@ -358,7 +358,7 @@ Run:
 
     wd=/path/to/s14_HiFi_separation/
     cd ${wd}
-    bam=/path/to/marker_creation/HiFi_ManualCurated_clean.bam
+    bam=/path/to/s4_marker_creation/HiFi_ManualCurated_clean.bam
     marker=/path/to/s11_selected_long_contigs_sc_read_coverage_genotype_v2/s4_gamete_binning_selected717_cor0.55_ncor-0.25_minHap100000_ncorminus_recalc_tmp_integrating_all_ctg_markers_to_LGs/s4p6_refine_grouping_final_window_markers_sorted.txt
     samtools view ${bam} | long_read_separator - ${marker} hifi_separation_20210712 > hifi_separation.log
 
