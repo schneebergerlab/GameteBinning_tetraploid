@@ -17,12 +17,14 @@ Public tools:
 
 Check [INSTALL](https://github.com/schneebergerlab/GameteBinning_tetraploid/blob/master/INSTALL) for installation of tools developed in this work: 
 
-* [T10X_barcode_trimmer for trimming 10x barcodes]
-* [CNV_HQ_v3 for sequencing depth analysis]
-* [tig_marker_finder for defining types of contig marker (i.e., hap/dip/trip/tetraplotigs)]
-* [asCellseparator for extracting barcoded-cells with a cutoff on minimum number of reads]
-* [gamete_binning_tetra for creating 48-groups of contig markers]
-* [calc_CN50.pl for assembly statistics checking]
+* T10X_barcode_trimmer for trimming 10x barcodes
+* CNV_HQ_v3 for sequencing depth analysis
+* tig_marker_finder for defining types of contig marker (i.e., hap/dip/trip/tetraplotigs)
+* asCellseparator for extracting barcoded-cells with a cutoff on minimum number of reads
+* gamete_binning_tetra for creating 48-groups of contig markers
+* calc_CN50.pl for assembly statistics checking
+
+Besides,
     
 * Basic tools awk and sed etc should be installed. 
 
