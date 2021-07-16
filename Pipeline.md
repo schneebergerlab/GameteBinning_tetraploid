@@ -19,9 +19,9 @@ Developed tools in this work (Check [INSTALL](https://github.com/schneebergerlab
 
 * T10X_barcode_trimmer for trimming 10x barcodes
 * CNV_HQ_v3 for sequencing depth analysis
-* tig_marker_finder for defining types of contig marker (i.e., hap/dip/trip/tetraplotigs)
+* tig_marker_finder for defining types of contig marker (i.e., hap/dip/trip/tetraplotigs) using sequencing depth
 * asCellseparator for extracting barcoded-cells with a cutoff on minimum number of reads
-* gamete_binning_tetra for creating 48-groups of contig markers
+* gamete_binning_tetra for creating 48-groups of contig markers (or, the haplotyping/phasing)
 * calc_CN50.pl for assembly statistics checking
 
 Besides,
