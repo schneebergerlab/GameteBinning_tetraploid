@@ -321,7 +321,7 @@ Note, we finally selected 717 nuclei to perform gamete binning (for details, ple
         done < ../s4_selected_long_contigs_sc_read_coverage_calculation/longctg_s4p3_selected_717_good_nucei_lib${sample}.txt
     done
     
-##### step 12 CORE FUNCTION of Gamete Binning: find linkage groups and match "homologous" linkage groups
+##### step 12 CORE FUNCTION of Gamete Binning: find linkage groups and match "homologous" linkage groups ([result available here](https://mega.nz/folder/et0x3SbQ#k7LKRvrPdvIvSeE7z5uY9g))
  
     wd=/path/to/s11_selected_long_contigs_sc_read_coverage_genotype_v2/
     cd ${wd} 
