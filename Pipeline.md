@@ -292,7 +292,7 @@ Note 2: MQ=5 is too stringent that it was observed some pollen lost coverage at 
         done < ${cellpath}/sample_${sample}_asCellseparator_40krp/${sample}_this_barcode_list
     done
     
-##### step 10 add more info on markers to read cnt file of each cell 
+##### step 10 add more info on markers to read cnt file of each cell ([result: *_updated.bed - available here](https://mega.nz/folder/2gUXkI7L#cGCXEaDWI1orgu_wfoHaBA))
 
     cellpath=/path/to/s7_individual_nuclei_extraction/
     cd ${cellpath}
