@@ -89,7 +89,7 @@ This leads to a version of manually curated assembly (please refer to manuscript
     wd=/path/to/s3_curated_asm/
     cd ${wd}
 
-We rename the purged assembly (with corresponding contig size information - two tab-separated columns: contig_id	contig_size) as below,
+We rename the purged assembly (with corresponding contig size information - two tab-separated columns: contig_id	contig_size) as below ((available here)[https://mega.nz/folder/GktXEYCR#F3I8uTKvKO0Fu8VY2yc2WA]),
     
     HiFiasm_ref_6366long_ctgs_selected.fasta
     HiFiasm_ref_6366long_ctgs_selected.chrsizes
