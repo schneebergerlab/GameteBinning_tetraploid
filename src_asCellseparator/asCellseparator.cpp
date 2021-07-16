@@ -1,7 +1,8 @@
 /*
    note: we remove the first 16 bp from Read 1 (and quality string)!
    update: remove 16 bp barcode and 6 bp linker sequence from read 1.
-   Writen by Hequan Sun, MPIPZ Email: sunhequan@gmai.com
+   Writen by Hequan Sun, MPIPZ
+   Email: sun@mpipz.mpg.de/sunhequan@gmai.com
 */
 #include   <iostream>
 #include    <fstream>

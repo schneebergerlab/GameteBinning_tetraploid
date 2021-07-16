@@ -1,5 +1,8 @@
 /* 
-this function converts a readname-sorted 10x bam (from cellranger-dna cnv outpt) to fastq, with corrected barcodes (raw barcodes in readname).
+    this function converts a readname-sorted 10x bam (from cellranger-dna cnv outpt) to fastq, 
+    with corrected barcodes (raw barcodes in readname).
+    
+    Written by Hequan Sun, Email: sun@mpipz.mpg.de/sunhequan@gmail.com
 */
 #include   <iostream>
 #include    <fstream>
