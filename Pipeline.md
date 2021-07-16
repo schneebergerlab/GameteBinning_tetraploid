@@ -15,7 +15,7 @@ Public tools:
 * [minimap2 2.20-r1061](https://github.com/lh3/minimap2)
 * [hifiasm 0.7](https://github.com/chhylp123/hifiasm)
 
-Check [INSTALL](https://github.com/schneebergerlab/GameteBinning_tetraploid/blob/master/INSTALL) for installation of tools developed in this work: 
+Developed tools in this work (Check [INSTALL](https://github.com/schneebergerlab/GameteBinning_tetraploid/blob/master/INSTALL) for installation): 
 
 * T10X_barcode_trimmer for trimming 10x barcodes
 * CNV_HQ_v3 for sequencing depth analysis
