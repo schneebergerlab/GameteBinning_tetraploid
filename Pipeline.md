@@ -15,16 +15,14 @@ Public tools:
 * [minimap2 2.20-r1061](https://github.com/lh3/minimap2)
 * [hifiasm 0.7](https://github.com/chhylp123/hifiasm)
 
-Developed tools in this work:
+Check [INSTALL](https://github.com/schneebergerlab/GameteBinning_tetraploid/blob/master/INSTALL) for installation of tools developed in this work: 
 
-* Please check [INSTALL](https://github.com/schneebergerlab/GameteBinning_tetraploid/blob/master/INSTALL) for installation of self-developed tools: 
-
-    T10X_barcode_trimmer for trimming 10x barcodes
-    CNV_HQ_v3 for sequencing depth analysis
-    tig_marker_finder for defining types of contig marker (i.e., hap/dip/trip/tetraplotigs)
-    asCellseparator for extracting barcoded-cells with a cutoff on minimum number of reads
-    gamete_binning_tetra for creating 48-groups of contig markers
-    calc_CN50.pl for assembly statistics checking
+* [T10X_barcode_trimmer for trimming 10x barcodes]
+* [CNV_HQ_v3 for sequencing depth analysis]
+* [tig_marker_finder for defining types of contig marker (i.e., hap/dip/trip/tetraplotigs)]
+* [asCellseparator for extracting barcoded-cells with a cutoff on minimum number of reads]
+* [gamete_binning_tetra for creating 48-groups of contig markers]
+* [calc_CN50.pl for assembly statistics checking]
     
 * Basic tools awk and sed etc should be installed. 
 
