@@ -155,7 +155,7 @@ Get position-wise sequencing depth
     CNV_HQ_v3 ${chrsizes} HiFi_ManualCurated_depth_clean.txt ${winsize} ${winsize} ${samplecol} ${avgdepth}
     
     
-##### step 6: new window marker generation => cnv_winsize10000_step10000_hq_markers_20210712_wsize50kb_final.txt
+##### step 6: new window marker generation => cnv_winsize10000_step10000_hq_markers_20210712_wsize50kb_final.txt ([available here](https://mega.nz/folder/qhtTWCiR#-EqFIiD6pyW4JZUn5uoqbQ))
 
     wd=/path/to/s4_marker_creation/
     cd ${wd}
