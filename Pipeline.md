@@ -21,7 +21,8 @@ Developed tools in this work (Check [INSTALL](https://github.com/schneebergerlab
 * CNV_HQ_v3 for sequencing depth analysis
 * tig_marker_finder for defining types of contig marker (i.e., hap/dip/trip/tetraplotigs) using sequencing depth
 * asCellseparator for extracting barcoded-cells with a cutoff on minimum number of reads
-* gamete_binning_tetra for creating 48-groups of contig markers (or, the haplotyping/phasing)
+* gamete_binning_tetra for creating 48-groups of contigs (or, the haplotyping/phasing)
+* long_read_separator for separating long reads into 48-groups for independent assembly
 * calc_CN50.pl for assembly statistics checking
 
 Besides,
@@ -499,7 +500,9 @@ The file "fa_to_run.list" should contain haplotype chromsome ids at each line: h
         cd ..
     done < ../fa_to_run.list
     
-    
+##### step 16
+
+After assembly of each haplotype chromosome, k-mers from parental cultivars can be used to check the haplotyping accuracy. And the contigs within each chromosome can be scaffolded into chromosome-level based on Hi-C data of Otava using existing tools (such as ALLHIC, SALSA2 etc). Details have been described in the manuscript.
     
     
     
