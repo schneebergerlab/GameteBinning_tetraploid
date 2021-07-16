@@ -2,6 +2,28 @@ Pipeline
 =
 This is the pipeline explaining how gamete binning in tetraploid (potato) works. Intermediate data (for running gamete_binning_tetra) are provided [here](https://mega.nz/folder/OhkkyDDQ#cb5j-u8BxyCIfxQ-rBAkfQ), if you want to have a test run.
 
+Required tools
+=
+Note 1: zlib.h is required by some tools (for the purpose of zipping files), please install accordingly.
+
+Note 2: a few publicly available tools are needed,
+
+* [samtools 1.9](https://github.com/samtools/)
+* [bedtools v2.27.1](https://github.com/arq5x/bedtools2)
+* [blast 2.10.0+](https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=Download)
+* [bowtie2 2.2.8](https://github.com/BenLangmead/bowtie2)
+* [picard 2.18.26-SNAPSHOT](https://github.com/broadinstitute/picard)
+* [cellranger-dna 1.1.0](https://support.10xgenomics.com/single-cell-dna/software/pipelines/latest/what-is-cell-ranger-dna)
+* [minimap2 2.20-r1061](https://github.com/lh3/minimap2)
+* [hifiasm 0.7](https://github.com/chhylp123/hifiasm)
+* Besides, basic tools awk, sed etc should be installed. 
+
+Installation of self-developed tools (T10X_barcode_trimmer for trimming 10x barcodes, CNV_HQ_v3 for sequencing depth analysis, tig_marker_finder for defining types of contig marker (i.e., hap/dip/trip/tetraplotigs), asCellseparator for extracting barcoded-cells with a cutoff on minimum number of reads, gamete_binning_tetra for creating 48-groups of contig markers, calc_CN50.pl for assembly statistics checking). 
+
+=
+
+Please check [INSTALL](https://github.com/schneebergerlab/GameteBinning_tetraploid/blob/master/INSTALL).
+
 ##### Step 0. Prepare data
 
 All data are from a tetraploid (potato cultivar) of interest, including PacBio HiFi reads from somatic tissue and short reads from
