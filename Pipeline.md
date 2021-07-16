@@ -2,11 +2,9 @@ Pipeline
 =
 This is the pipeline explaining how gamete binning in tetraploid (potato) works. Intermediate data (for running gamete_binning_tetra) are provided [here](https://mega.nz/folder/OhkkyDDQ#cb5j-u8BxyCIfxQ-rBAkfQ), if you want to have a test run.
 
-Required tools
-==
-Note 1: zlib.h is required by some tools (for the purpose of zipping files), please install accordingly.
+Note: zlib.h is required by some tools (for the purpose of zipping files), please install accordingly.
 
-Note 2: a few publicly available tools are needed,
+Public tools:
 
 * [samtools 1.9](https://github.com/samtools/)
 * [bedtools v2.27.1](https://github.com/arq5x/bedtools2)
@@ -16,6 +14,9 @@ Note 2: a few publicly available tools are needed,
 * [cellranger-dna 1.1.0](https://support.10xgenomics.com/single-cell-dna/software/pipelines/latest/what-is-cell-ranger-dna)
 * [minimap2 2.20-r1061](https://github.com/lh3/minimap2)
 * [hifiasm 0.7](https://github.com/chhylp123/hifiasm)
+
+Developed tools in this work:
+
 * Please check [INSTALL](https://github.com/schneebergerlab/GameteBinning_tetraploid/blob/master/INSTALL) for installation of self-developed tools: 
 
     T10X_barcode_trimmer for trimming 10x barcodes
