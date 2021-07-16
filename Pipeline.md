@@ -1,6 +1,6 @@
 Pipeline
 =
-This is the pipeline explaining how gamete binning in tetraploid (potato) works. Some intermediate data are provided here, if you want to have a test run for some steps given below.
+This is the pipeline explaining how gamete binning in tetraploid (potato) works. Intermediate data (for running gamete_binning_tetra) are provided [here] (https://mega.nz/folder/OhkkyDDQ#cb5j-u8BxyCIfxQ-rBAkfQ), if you want to have a test run.
 
 ##### Step 0. Prepare data
 
