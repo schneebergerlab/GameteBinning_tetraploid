@@ -1,6 +1,6 @@
 Pipeline
 =
-This is the pipeline explaining how gamete binning in tetraploid (potato) works. Intermediate data (for running gamete_binning_tetra) are provided [here](https://mega.nz/folder/OhkkyDDQ#cb5j-u8BxyCIfxQ-rBAkfQ), if you want to have a test run.
+This is the pipeline explaining how gamete binning in tetraploid (potato) works. Intermediate data (for running gamete_binning_tetra) are provided [here](https://mega.nz/folder/OhkkyDDQ#cb5j-u8BxyCIfxQ-rBAkfQ) (please configure "local storage" for mega, if you have not done so), if you want to have a test run.
 
 Note: zlib.h is required by some tools (for the purpose of zipping files), please install accordingly.
 
