@@ -34,7 +34,7 @@ Besides,
 All data are from a tetraploid (potato cultivar) of interest, including PacBio HiFi reads from somatic tissue and short reads from
 single-cell sequencing of sufficient gamete genomes; note that here we also included additional Illumina sequencing (of 10x single-molecule libraries) for contig depth analysis (to define contig markers more reliably). Single-molecule libraries can be replaced with any other normal Illumina short read sequencings in future applications. 
 
-In this example pipeline, suppose all raw data (available on NCBI Bioproject PRJNA726019, [SRA-list](https://mega.nz/file/TsEXFKxS#sxX7RXyGWkC4cUWaJx6BJddEqUW29mT2mJkM3BgX1Lw)) are collected in the path below (where fastq file names might be indicatively different from downloaded ones),
+In this example pipeline, suppose all raw data (available on NCBI Bioproject PRJNA726019, [SRA-list](https://mega.nz/file/TsEXFKxS#sxX7RXyGWkC4cUWaJx6BJddEqUW29mT2mJkM3BgX1Lw) or in aux_data folder) are collected in the path below (where fastq file names might be indicatively different from downloaded ones),
 
     wd=/path/to/s0_reads/
     cd ${wd}
